@@ -162,7 +162,16 @@ function PreviewVisual({
 }) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const [shouldMount, setShouldMount] = useState(!isDesktop);
 
+  useEffect(() => {
+    if (isDesktop) {
+      const timer = setTimeout(() => setShouldMount(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isDesktop]);
+
+  if (!shouldMount) return null;
   if (error) return null;
 
   return (

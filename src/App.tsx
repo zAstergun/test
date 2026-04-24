@@ -179,10 +179,10 @@ function PreviewVisual({
 
   return (
     <div
-      className={`relative overflow-hidden w-full bg-aster-dark/[0.04] ${
+      className={`relative overflow-hidden w-full flex justify-center items-center bg-aster-dark/[0.04] ${
         isDesktop
-          ? "rounded-2xl mt-10 h-[340px]"
-          : "rounded-2xl border border-aster-dark/10 mt-8 mx-0 h-[200px]"
+          ? "rounded-2xl mt-8"
+          : "rounded-2xl border border-aster-dark/10 mt-8 mx-0"
       }`}
       style={{ transform: "translateZ(0)" }} // Force isolated hardware-accelerated layer
     >
@@ -191,7 +191,7 @@ function PreviewVisual({
           src={src}
           alt={alt}
           onLoad={() => setLoaded(true)}
-          className={`w-full h-full object-cover transition-opacity duration-500 ${
+          className={`w-full h-auto max-h-[500px] object-contain transition-opacity duration-500 ${
             loaded ? "opacity-100" : "opacity-0 absolute inset-0"
           }`}
         />
@@ -234,7 +234,7 @@ function DetailPanel({
       {/* Body — unified scroll area with title at top */}
       <div
         className={`flex-1 overflow-y-auto ${isDesktop ? "ipad-content-reveal" : ""} ${
-          isDesktop ? "px-12 py-10" : "px-6 py-8"
+          isDesktop ? "px-20 py-10" : "px-6 py-8"
         }`}
       >
         {/* Back button (mobile only) */}
@@ -304,7 +304,7 @@ function DetailPanel({
         {/* Preview Visual — desktop */}
         {isDesktop && item.previewMedia && (
           <>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4 mt-10">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4 mt-8">
               Preview
             </h3>
             <PreviewVisual

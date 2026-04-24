@@ -160,8 +160,8 @@ function DetailPanel({
     <div className={containerClass}>
       {/* Header */}
       <div
-        className={`relative flex items-end px-6 pb-5 ${
-          isDesktop ? "h-44 rounded-t-3xl" : "h-28"
+        className={`relative flex items-end ${
+          isDesktop ? "h-48 rounded-t-3xl px-12 pb-8" : "h-28 px-6 pb-5"
         }`}
         style={{
           background: `linear-gradient(135deg, ${item.gradient[0]}, ${item.gradient[1]})`,
@@ -178,21 +178,21 @@ function DetailPanel({
             ←
           </button>
         )}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           <span
-            className={`drop-shadow-md ${isDesktop ? "text-5xl" : "text-3xl"}`}
+            className={`drop-shadow-md ${isDesktop ? "text-6xl" : "text-3xl"}`}
           >
             {item.icon}
           </span>
           <div>
             <h2
               className={`text-white font-bold leading-tight drop-shadow-sm ${
-                isDesktop ? "text-2xl" : "text-lg"
+                isDesktop ? "text-3xl" : "text-lg"
               }`}
             >
               {item.name}
             </h2>
-            <div className="flex flex-wrap gap-1.5 mt-1.5">
+            <div className="flex flex-wrap gap-2 mt-2">
               {item.tags.map((tag) => (
                 <span
                   key={tag}
@@ -209,25 +209,27 @@ function DetailPanel({
       {/* Body */}
       <div
         className={`flex-1 overflow-y-auto ${
-          isDesktop ? "px-8 py-8" : "px-5 py-5"
+          isDesktop ? "px-12 py-10" : "px-5 py-5"
         }`}
       >
-        <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-2">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-3">
           Sobre
         </h3>
         <p
-          className={`text-aster-dark/80 leading-relaxed mb-8 ${
-            isDesktop ? "text-base max-w-xl" : "text-sm"
+          className={`text-aster-dark/80 leading-relaxed mb-10 ${
+            isDesktop ? "text-base max-w-2xl" : "text-sm"
           }`}
         >
           {item.summary}
         </p>
 
-        <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-3">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4">
           Links
         </h3>
         <div
-          className={`flex flex-col gap-2 ${isDesktop ? "max-w-md" : ""}`}
+          className={`flex flex-col gap-2.5 ${
+            isDesktop ? "max-w-lg" : ""
+          }`}
         >
           {item.links.map((link) => (
             <a
@@ -235,7 +237,7 @@ function DetailPanel({
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-aster-beige-dark/60 border border-aster-dark/[0.08] hover:bg-aster-beige-dark hover:shadow-cel-sm transition-all duration-200 group"
+              className="flex items-center gap-3 px-5 py-3.5 rounded-xl bg-aster-beige-dark/60 border border-aster-dark/[0.08] hover:bg-aster-beige-dark hover:shadow-cel-sm transition-all duration-200 group"
             >
               <span className="text-base">🔗</span>
               <span className="text-sm font-medium text-aster-dark/80 group-hover:text-aster-accent transition-colors">
@@ -567,7 +569,7 @@ export default function App() {
 
       {/* ── DESKTOP LAYOUT ── */}
       {isDesktop && (
-        <div className="h-screen w-full flex items-center justify-center gap-8 p-8 relative z-10">
+        <div className="h-screen w-full flex items-center justify-center gap-10 px-10 py-8 relative z-10">
           {/* Brand watermark */}
           <div className="absolute top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-10 select-none">
             <span className="text-white/10 text-xs font-mono tracking-[0.3em] uppercase">
@@ -582,8 +584,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Detail Panel (right) */}
-          <div className="flex-1 max-w-2xl h-[680px] relative z-10">
+          {/* Detail Panel (right) — fills available space, capped for readability */}
+          <div className="flex-1 max-w-[1400px] h-[750px] relative z-10">
             {selectedDetail ? (
               <DetailPanel
                 item={selectedDetail}
@@ -591,15 +593,56 @@ export default function App() {
                 isDesktop
               />
             ) : (
-              <div className="h-full flex flex-col items-center justify-center rounded-3xl bg-aster-dark-lighter/50 border border-white/[0.04]">
-                <span className="text-5xl mb-4 opacity-30 select-none">
-                  📲
-                </span>
-                <p className="text-white/20 text-sm font-medium">
-                  Seleciona um projeto para ver os detalhes
+              /* ── Premium Empty State ── */
+              <div className="h-full flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-aster-dark-lighter/60 to-aster-dark-lighter/30 border border-white/[0.06] backdrop-blur-sm relative overflow-hidden">
+                {/* Decorative ambient circles */}
+                <div className="absolute top-10 right-16 w-40 h-40 rounded-full bg-aster-accent/[0.04] blur-2xl pointer-events-none" />
+                <div className="absolute bottom-16 left-12 w-56 h-56 rounded-full bg-[#00cec9]/[0.03] blur-3xl pointer-events-none" />
+
+                {/* Logo mark */}
+                <div className="relative mb-6">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-aster-accent/20 to-aster-accent/5 border border-aster-accent/10 flex items-center justify-center shadow-lg">
+                    <span className="text-4xl select-none">✦</span>
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-aster-accent/60 animate-pulse" />
+                </div>
+
+                {/* Welcome copy */}
+                <h2 className="text-white/80 text-2xl font-bold tracking-tight mb-2">
+                  Bem-vindo ao <span className="text-aster-accent">AsterDev</span>
+                </h2>
+                <p className="text-white/30 text-sm font-medium max-w-sm text-center leading-relaxed mb-6">
+                  Explora o portfólio navegando pelos apps no telemóvel.
+                  Cada projeto abre aqui com todos os detalhes.
                 </p>
-                <p className="text-white/10 text-xs mt-1 font-mono">
-                  Usa as teclas ou clica no ícone
+
+                {/* Interaction hint */}
+                <div className="flex items-center gap-4 px-5 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+                  <div className="flex gap-1">
+                    {["W", "A", "S", "D"].map((key) => (
+                      <kbd
+                        key={key}
+                        className="w-6 h-6 rounded-md text-[10px] font-mono font-bold bg-white/[0.06] text-white/30 flex items-center justify-center border border-white/[0.08]"
+                      >
+                        {key}
+                      </kbd>
+                    ))}
+                  </div>
+                  <span className="text-white/20 text-xs font-medium">
+                    navegar
+                  </span>
+                  <div className="w-px h-4 bg-white/10" />
+                  <kbd className="px-3 h-6 rounded-md text-[10px] font-mono font-bold bg-white/[0.06] text-white/30 flex items-center justify-center border border-white/[0.08]">
+                    Enter
+                  </kbd>
+                  <span className="text-white/20 text-xs font-medium">
+                    abrir
+                  </span>
+                </div>
+
+                {/* Tagline */}
+                <p className="text-white/[0.08] text-[10px] font-mono tracking-widest uppercase mt-8">
+                  Frontend · Mobile · Design
                 </p>
               </div>
             )}

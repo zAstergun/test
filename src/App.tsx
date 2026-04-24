@@ -5,6 +5,7 @@ import {
   isDetailable,
   isFolder,
   isLink,
+  isImageIcon,
   type GridItem,
   type DetailableItem,
   type FolderItem,
@@ -108,7 +109,7 @@ function GridIcon({
     >
       {/* Focus ring — asymmetric inset to balance the 5px cel-shading shadow */}
       {isFocused && (
-        <div className="absolute -top-[3px] -left-[3px] -bottom-[8px] -right-[8px] rounded-2xl border-2 border-aster-accent/60 animate-pulse-glow pointer-events-none" />
+        <div className="hidden md:block absolute -top-[3px] -left-[3px] -bottom-[8px] -right-[8px] rounded-2xl border-2 border-aster-accent/60 animate-pulse-glow pointer-events-none" />
       )}
 
       {/* Icon */}
@@ -120,7 +121,15 @@ function GridIcon({
           background: `linear-gradient(135deg, ${item.gradient[0]}, ${item.gradient[1]})`,
         }}
       >
-        <span className="drop-shadow-sm select-none">{item.icon}</span>
+        {isImageIcon(item.icon) ? (
+          <img
+            src={item.icon}
+            alt={item.name}
+            className="w-full h-full object-cover rounded-2xl drop-shadow-sm"
+          />
+        ) : (
+          <span className="drop-shadow-sm select-none">{item.icon}</span>
+        )}
 
         {/* Folder badge */}
         {isFolder_ && (
@@ -229,11 +238,23 @@ function DetailPanel({
           </button>
         )}
         <div className="flex items-center gap-5">
-          <span
-            className={`drop-shadow-md ${isDesktop ? "text-6xl" : "text-3xl"}`}
-          >
-            {item.icon}
-          </span>
+          {isImageIcon(item.icon) ? (
+            <img
+              src={item.icon}
+              alt={item.name}
+              className={`object-contain drop-shadow-md ${
+                isDesktop ? "w-16 h-16" : "w-9 h-9"
+              }`}
+            />
+          ) : (
+            <span
+              className={`drop-shadow-md ${
+                isDesktop ? "text-6xl" : "text-3xl"
+              }`}
+            >
+              {item.icon}
+            </span>
+          )}
           <div>
             <h2
               className={`text-white font-bold leading-tight drop-shadow-sm ${
@@ -396,7 +417,15 @@ function FolderHeader({
       >
         ←
       </button>
-      <span className="text-sm">{folder.icon}</span>
+      {isImageIcon(folder.icon) ? (
+        <img
+          src={folder.icon}
+          alt={folder.name}
+          className="w-5 h-5 object-contain"
+        />
+      ) : (
+        <span className="text-sm">{folder.icon}</span>
+      )}
       <h2 className="text-sm font-bold text-aster-dark tracking-tight">
         {folder.name}
       </h2>

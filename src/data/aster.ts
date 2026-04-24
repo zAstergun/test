@@ -71,6 +71,18 @@ export function isLink(item: GridItem): item is LinkItem {
   return item.type === "link";
 }
 
+// ─── Helper: detect image-based icons ────────────────────────
+
+/** Returns true if the icon string references an image file rather than an emoji */
+export function isImageIcon(icon: string): boolean {
+  return (
+    icon.startsWith("/") ||
+    icon.includes(".png") ||
+    icon.includes(".svg") ||
+    icon.includes(".ico")
+  );
+}
+
 // ─── Data ────────────────────────────────────────────────────
 
 /**
@@ -91,7 +103,7 @@ export const HOME_ITEMS: GridItem[] = [
       { name: "Email", url: "mailto:contact@aster.dev" },
     ],
     tags: ["Frontend", "Mobile", "UI/UX"],
-    previewMedia: "https://placehold.co/600x400/6c63ff/ffffff?text=Sobre+Mim",
+    previewMedia: "/previews/sobre-mim.gif",
   },
   {
     type: "app",
@@ -103,15 +115,20 @@ export const HOME_ITEMS: GridItem[] = [
       "Currículo profissional interativo. Experiência em Frontend & Mobile com foco em React, React Native e TypeScript.",
     links: [{ name: "Download PDF", url: "#" }],
     tags: ["Carreira", "Frontend", "Mobile"],
-    previewMedia: "https://placehold.co/600x400/e84393/ffffff?text=Curriculo",
+    previewMedia: "/previews/curriculo.gif",
   },
   {
-    type: "link",
+    type: "app",
     id: "github",
     name: "GitHub",
-    icon: "🐙",
+    icon: "/icons/octocat.svg",
     gradient: ["#2d3436", "#636e72"],
-    url: "https://github.com",
+    summary:
+      "Perfil ativo com projetos open-source que demonstram código limpo, arquitetura bem definida e evolução contínua. De calculadoras estatísticas com dados reais do IBGE a wikis acadêmicas completas — cada repositório reflete boas práticas, separação de responsabilidades e atenção ao detalhe.",
+    links: [
+      { name: "Ver Perfil no GitHub", url: "https://github.com/zAstergun" },
+    ],
+    tags: ["Open Source", "Código Limpo", "Boas Práticas"],
   },
   {
     type: "folder",
@@ -122,27 +139,60 @@ export const HOME_ITEMS: GridItem[] = [
     children: [
       {
         type: "project",
-        id: "pex-wiki",
-        name: "PEX Wiki",
-        icon: "📖",
-        gradient: ["#6c63ff", "#a29bfe"],
+        id: "ideal-calculator",
+        name: "Ideal Calc",
+        icon: "/icons/calculator.svg",
+        gradient: ["#0b0a0a", "#121214"],
         summary:
-          "Wiki completa para o ecossistema PEX. Interface responsiva construída com foco em performance e acessibilidade.",
-        links: [{ name: "Visitar Wiki", url: "#" }],
-        tags: ["React", "TypeScript", "Wiki"],
-        previewMedia: "https://placehold.co/600x400/6c63ff/ffffff?text=PEX+Wiki",
+          "Calculadora estatística interativa que cruza 12 filtros demográficos com microdados oficiais do IBGE (Censo 2022, PNAD 2023) para revelar a probabilidade real de encontrar o parceiro ideal no Brasil. Cálculo em tempo real, card viral compartilhável e auditoria completa de dados.",
+        links: [
+          { name: "Abrir App", url: "https://idealcalc.app/" },
+          {
+            name: "Código Fonte",
+            url: "https://github.com/zAstergun/Ideal-Calculator",
+          },
+        ],
+        tags: ["JavaScript", "Estatística", "IBGE", "UI/UX"],
+        previewMedia: "/previews/calculator.webp",
       },
       {
         type: "project",
-        id: "calculadora-raridade",
-        name: "Calc. Raridade",
-        icon: "🎲",
-        gradient: ["#00cec9", "#55efc4"],
+        id: "soul-fighter-memory",
+        name: "Soul Fighter: Memory Game",
+        icon: "/icons/memory.png",
+        gradient: ["#6c5ce7", "#a29bfe"],
         summary:
-          "Ferramenta de cálculo de raridade com algoritmos otimizados. Design premium com feedback visual em tempo real.",
-        links: [{ name: "Abrir Calculadora", url: "#" }],
-        tags: ["JavaScript", "Algoritmos", "UI/UX"],
-        previewMedia: "https://placehold.co/600x400/00cec9/ffffff?text=Calc+Raridade",
+          "Jogo da memória temático inspirado no universo Soul Fighter de League of Legends. Mecânica clássica de card-flip com assets oficiais do evento, lógica de matching em JavaScript vanilla e design responsivo fiel à identidade visual do game.",
+        links: [
+          {
+            name: "Jogar Agora",
+            url: "https://zastergun.github.io/Soul-Fighter-Memory-Game/",
+          },
+          {
+            name: "Código Fonte",
+            url: "https://github.com/zAstergun/Soul-Fighter-Memory-Game",
+          },
+        ],
+        tags: ["JavaScript", "Game Dev", "CSS", "LoL"],
+        previewMedia: "/previews/memory.webp",
+      },
+      {
+        type: "project",
+        id: "pex-wiki",
+        name: "PEX Wiki",
+        icon: "/icons/pex_wiki.png",
+        gradient: ["#5865F2", "#7289DA"],
+        summary:
+          "Hub de conhecimento acadêmico para alunos de Ciência da Computação da Descomplica. Sistema de Views com roteamento SPA em Vanilla JS, design system 'Blurple Gamer' em dark mode, checklists interativos, modais dinâmicos para os 17 ODS da ONU e responsividade Mobile First.",
+        links: [
+          { name: "Visitar Wiki", url: "https://pex-wiki.vercel.app/" },
+          {
+            name: "Código Fonte",
+            url: "https://github.com/Descomplica-TI/Pex-Wiki",
+          },
+        ],
+        tags: ["Vanilla JS", "SPA", "Dark Mode", "Educação"],
+        previewMedia: "/previews/pex.webp",
       },
     ],
   },
@@ -163,7 +213,7 @@ export const HOME_ITEMS: GridItem[] = [
           "Aplicação mobile de demonstração construída com React Native. Arquitetura limpa, navegação fluida e design system customizado.",
         links: [{ name: "Ver Demo", url: "#" }],
         tags: ["React Native", "Expo", "Mobile"],
-        previewMedia: "https://placehold.co/600x400/e17055/ffffff?text=App+Demo",
+        previewMedia: "/previews/app-demo.gif",
       },
     ],
   },

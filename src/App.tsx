@@ -210,23 +210,23 @@ function DetailPanel({
   onClose: () => void;
   isDesktop: boolean;
 }) {
-  // On desktop this renders in the side panel, on mobile as overlay
+  // On desktop this renders inside the iPad screen, on mobile as overlay
   const containerClass = isDesktop
-    ? "flex flex-col h-full bg-aster-beige animate-fade-in rounded-3xl overflow-hidden shadow-2xl"
+    ? "detail-panel-desktop flex flex-col h-full bg-aster-beige overflow-hidden"
     : "detail-panel absolute inset-0 z-30 bg-aster-beige flex flex-col";
 
   return (
-    <div className={containerClass}>
+    <div className={containerClass} key={item.id}>
       {/* Header */}
       <div
         className={`relative flex items-end ${
-          isDesktop ? "h-48 rounded-t-3xl px-12 pb-8" : "h-28 px-6 pb-5"
+          isDesktop ? "h-48 px-12 pb-8" : "h-28 px-6 pb-5"
         }`}
         style={{
           background: `linear-gradient(135deg, ${item.gradient[0]}, ${item.gradient[1]})`,
         }}
       >
-        {/* Back button (mobile only — desktop uses phone nav) */}
+        {/* Back button (mobile only) */}
         {!isDesktop && (
           <button
             type="button"
@@ -237,7 +237,7 @@ function DetailPanel({
             ←
           </button>
         )}
-        <div className="flex items-center gap-5">
+        <div className={`flex items-center gap-5 ${isDesktop ? "ipad-content-reveal" : ""}`}>
           {isImageIcon(item.icon) ? (
             <img
               src={item.icon}
@@ -279,7 +279,7 @@ function DetailPanel({
 
       {/* Body */}
       <div
-        className={`flex-1 overflow-y-auto ${
+        className={`flex-1 overflow-y-auto ${isDesktop ? "ipad-content-reveal" : ""} ${
           isDesktop ? "px-12 py-10" : "px-5 py-5"
         }`}
       >
@@ -294,7 +294,7 @@ function DetailPanel({
           {item.summary}
         </p>
 
-        {/* Preview Visual — desktop: prominent below summary */}
+        {/* Preview Visual — desktop */}
         {isDesktop && item.previewMedia && (
           <>
             <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4 mt-10">
@@ -339,7 +339,7 @@ function DetailPanel({
           ))}
         </div>
 
-        {/* Preview Visual — mobile: after links, with cel-shading border */}
+        {/* Preview Visual — mobile */}
         {!isDesktop && item.previewMedia && (
           <>
             <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4 mt-8">
@@ -353,6 +353,17 @@ function DetailPanel({
           </>
         )}
       </div>
+
+      {/* iPad home indicator (desktop) */}
+      {isDesktop && (
+        <div className="ipad-home-bar bg-aster-beige">
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Fechar app"
+          />
+        </div>
+      )}
 
       {/* Bottom safe area for floating home button (mobile) */}
       {!isDesktop && <div className="h-20 bg-aster-beige" />}
@@ -492,7 +503,10 @@ export default function App() {
         return;
       }
       if (isDetailable(item)) {
-        setSelectedDetail(item);
+        // Toggle: if already selected, deselect (close detail)
+        setSelectedDetail((prev) =>
+          prev && prev.id === item.id ? null : item
+        );
       }
     },
     []
@@ -695,66 +709,74 @@ export default function App() {
             </div>
           </div>
 
-          {/* Detail Panel (right) — fills available space, capped for readability */}
+          {/* Detail Panel (right) — iPad shell frame */}
           <div className="flex-1 max-w-[1400px] h-[750px] relative z-10">
             {selectedDetail ? (
-              <DetailPanel
-                item={selectedDetail}
-                onClose={closeDetail}
-                isDesktop
-              />
+              <div className="ipad-shell w-full h-full">
+                <div className="ipad-screen bg-aster-beige">
+                  <DetailPanel
+                    item={selectedDetail}
+                    onClose={closeDetail}
+                    isDesktop
+                  />
+                </div>
+              </div>
             ) : (
               /* ── Premium Empty State ── */
-              <div className="h-full flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-aster-dark-lighter/60 to-aster-dark-lighter/30 border border-white/[0.06] backdrop-blur-sm relative overflow-hidden">
-                {/* Decorative ambient circles */}
-                <div className="absolute top-10 right-16 w-40 h-40 rounded-full bg-aster-accent/[0.04] blur-2xl pointer-events-none" />
-                <div className="absolute bottom-16 left-12 w-56 h-56 rounded-full bg-[#00cec9]/[0.03] blur-3xl pointer-events-none" />
+              <div className="ipad-shell w-full h-full">
+                <div className="ipad-screen bg-gradient-to-br from-aster-dark-lighter/90 to-aster-dark-lighter/60">
+                  <div className="h-full flex flex-col items-center justify-center relative overflow-hidden">
+                    {/* Decorative ambient circles */}
+                    <div className="absolute top-10 right-16 w-40 h-40 rounded-full bg-aster-accent/[0.04] blur-2xl pointer-events-none" />
+                    <div className="absolute bottom-16 left-12 w-56 h-56 rounded-full bg-[#00cec9]/[0.03] blur-3xl pointer-events-none" />
 
-                {/* Logo mark */}
-                <div className="relative mb-6">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-aster-accent/20 to-aster-accent/5 border border-aster-accent/10 flex items-center justify-center shadow-lg">
-                    <span className="text-4xl select-none">✦</span>
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-aster-accent/60 animate-pulse" />
-                </div>
+                    {/* Logo mark */}
+                    <div className="relative mb-6">
+                      <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-aster-accent/20 to-aster-accent/5 border border-aster-accent/10 flex items-center justify-center shadow-lg">
+                        <span className="text-4xl select-none">✦</span>
+                      </div>
+                      <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-aster-accent/60 animate-pulse" />
+                    </div>
 
-                {/* Welcome copy */}
-                <h2 className="text-white/80 text-2xl font-bold tracking-tight mb-2">
-                  Bem-vindo ao <span className="text-aster-accent">AsterDev</span>
-                </h2>
-                <p className="text-white/30 text-sm font-medium max-w-sm text-center leading-relaxed mb-6">
-                  Explora o portfólio navegando pelos apps no telemóvel.
-                  Cada projeto abre aqui com todos os detalhes.
-                </p>
+                    {/* Welcome copy */}
+                    <h2 className="text-white/80 text-2xl font-bold tracking-tight mb-2">
+                      Bem-vindo ao <span className="text-aster-accent">AsterDev</span>
+                    </h2>
+                    <p className="text-white/30 text-sm font-medium max-w-sm text-center leading-relaxed mb-6">
+                      Explora o portfólio navegando pelos apps no telemóvel.
+                      Cada projeto abre aqui com todos os detalhes.
+                    </p>
 
-                {/* Interaction hint */}
-                <div className="flex items-center gap-4 px-5 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-                  <div className="flex gap-1">
-                    {["W", "A", "S", "D"].map((key) => (
-                      <kbd
-                        key={key}
-                        className="w-6 h-6 rounded-md text-[10px] font-mono font-bold bg-white/[0.06] text-white/30 flex items-center justify-center border border-white/[0.08]"
-                      >
-                        {key}
+                    {/* Interaction hint */}
+                    <div className="flex items-center gap-4 px-5 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+                      <div className="flex gap-1">
+                        {["W", "A", "S", "D"].map((key) => (
+                          <kbd
+                            key={key}
+                            className="w-6 h-6 rounded-md text-[10px] font-mono font-bold bg-white/[0.06] text-white/30 flex items-center justify-center border border-white/[0.08]"
+                          >
+                            {key}
+                          </kbd>
+                        ))}
+                      </div>
+                      <span className="text-white/20 text-xs font-medium">
+                        navegar
+                      </span>
+                      <div className="w-px h-4 bg-white/10" />
+                      <kbd className="px-3 h-6 rounded-md text-[10px] font-mono font-bold bg-white/[0.06] text-white/30 flex items-center justify-center border border-white/[0.08]">
+                        Enter
                       </kbd>
-                    ))}
-                  </div>
-                  <span className="text-white/20 text-xs font-medium">
-                    navegar
-                  </span>
-                  <div className="w-px h-4 bg-white/10" />
-                  <kbd className="px-3 h-6 rounded-md text-[10px] font-mono font-bold bg-white/[0.06] text-white/30 flex items-center justify-center border border-white/[0.08]">
-                    Enter
-                  </kbd>
-                  <span className="text-white/20 text-xs font-medium">
-                    abrir
-                  </span>
-                </div>
+                      <span className="text-white/20 text-xs font-medium">
+                        abrir
+                      </span>
+                    </div>
 
-                {/* Tagline */}
-                <p className="text-white/[0.08] text-[10px] font-mono tracking-widest uppercase mt-8">
-                  Frontend · Mobile · Design
-                </p>
+                    {/* Tagline */}
+                    <p className="text-white/[0.08] text-[10px] font-mono tracking-widest uppercase mt-8">
+                      Frontend · Mobile · Design
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </div>

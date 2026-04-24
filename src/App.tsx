@@ -86,7 +86,7 @@ function GridIcon({
 }: {
   item: GridItem;
   isFocused: boolean;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent) => void;
   onHover: () => void;
 }) {
   const isFolder_ = item.type === "folder";
@@ -206,12 +206,14 @@ function DetailPanel({
   isDesktop,
   isClosing,
   onAnimationEnd,
+  origin,
 }: {
   item: DetailableItem;
   onClose: () => void;
   isDesktop: boolean;
   isClosing?: boolean;
   onAnimationEnd?: () => void;
+  origin?: { x: string; y: string };
 }) {
   const animClass = isClosing ? "animate-ipadAppClose" : "animate-ipadAppOpen";
 
@@ -222,7 +224,10 @@ function DetailPanel({
   return (
     <div
       className={containerClass}
-      style={{ willChange: 'transform, opacity' }}
+      style={{
+        willChange: 'transform, opacity',
+        transformOrigin: origin ? `${origin.x} ${origin.y}` : '50% 50%',
+      }}
       key={item.id}
       onAnimationEnd={onAnimationEnd}
     >
@@ -471,6 +476,7 @@ export default function App() {
   );
   const [isClosing, setIsClosing] = useState(false);
   const [openFolder, setOpenFolder] = useState<FolderItem | null>(null);
+  const [appOrigin, setAppOrigin] = useState({ x: "50%", y: "50%" });
   const time = useClockTime();
   const isDesktop = useIsDesktop();
 
@@ -517,7 +523,7 @@ export default function App() {
   }, []);
 
   const activateItem = useCallback(
-    (item: GridItem, index: number) => {
+    (item: GridItem, index: number, e?: React.MouseEvent) => {
       setFocusedIndex(index);
 
       if (isLink(item)) {
@@ -531,6 +537,17 @@ export default function App() {
         return;
       }
       if (isDetailable(item)) {
+        // Calculate transform origin from the clicked icon's centre
+        if (e && e.currentTarget) {
+          const rect = e.currentTarget.getBoundingClientRect();
+          setAppOrigin({
+            x: `${rect.left + rect.width / 2}px`,
+            y: `${rect.top + rect.height / 2}px`,
+          });
+        } else {
+          setAppOrigin({ x: "50%", y: "50%" });
+        }
+
         // Toggle with animation: if already open, trigger close animation
         setSelectedDetail((prev) => {
           if (prev && prev.id === item.id) {
@@ -591,7 +608,7 @@ export default function App() {
 
         Enter: () => {
           const item = currentItems[safeFocusedIndex];
-          if (item) activateItem(item, safeFocusedIndex);
+          if (item) activateItem(item, safeFocusedIndex, undefined);
         },
 
         Escape: () => {
@@ -661,7 +678,7 @@ export default function App() {
               key={item.id}
               item={item}
               isFocused={safeFocusedIndex === index}
-              onClick={() => activateItem(item, index)}
+              onClick={(e) => activateItem(item, index, e)}
               onHover={() => setFocusedIndex(index)}
             />
           ))}
@@ -690,6 +707,7 @@ export default function App() {
               ? () => { setSelectedDetail(null); setIsClosing(false); }
               : undefined
           }
+          origin={appOrigin}
         />
       )}
     </>
@@ -816,6 +834,7 @@ export default function App() {
                         ? () => { setSelectedDetail(null); setIsClosing(false); }
                         : undefined
                     }
+                    origin={appOrigin}
                   />
                 )}
               </div>

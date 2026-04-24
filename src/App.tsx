@@ -212,7 +212,7 @@ function DetailPanel({
 }) {
   // On desktop this renders inside the iPad screen, on mobile as overlay
   const containerClass = isDesktop
-    ? "detail-panel-desktop flex flex-col h-full bg-aster-beige overflow-hidden"
+    ? "detail-panel-desktop absolute inset-0 z-20 flex flex-col bg-aster-beige overflow-hidden"
     : "detail-panel absolute inset-0 z-30 bg-aster-beige flex flex-col";
 
   return (
@@ -714,20 +714,10 @@ export default function App() {
 
           {/* Detail Panel (right) — iPad shell frame */}
           <div className="flex-1 max-w-[1400px] h-[750px] relative z-10">
-            {selectedDetail ? (
-              <div className="ipad-shell w-full h-full">
-                <div className="ipad-screen">
-                  <DetailPanel
-                    item={selectedDetail}
-                    onClose={closeDetail}
-                    isDesktop
-                  />
-                </div>
-              </div>
-            ) : (
-              /* ── Premium Empty State ── */
-              <div className="ipad-shell w-full h-full">
-                <div className="ipad-screen bg-gradient-to-br from-aster-dark-lighter/90 to-aster-dark-lighter/60">
+            <div className="ipad-shell w-full h-full">
+              <div className="ipad-screen bg-gradient-to-br from-aster-dark-lighter/90 to-aster-dark-lighter/60">
+                {/* Empty State - Base Layer (always rendered) */}
+                <div className="relative z-10 h-full w-full">
                   <div className="h-full flex flex-col items-center justify-center relative overflow-hidden">
                     {/* Decorative ambient circles */}
                     <div className="absolute top-10 right-16 w-40 h-40 rounded-full bg-aster-accent/[0.04] blur-2xl pointer-events-none" />
@@ -780,8 +770,17 @@ export default function App() {
                     </p>
                   </div>
                 </div>
+
+                {/* DetailPanel - Overlay Layer (conditional) */}
+                {selectedDetail && (
+                  <DetailPanel
+                    item={selectedDetail}
+                    onClose={closeDetail}
+                    isDesktop
+                  />
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           {/* Bottom brand */}

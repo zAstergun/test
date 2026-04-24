@@ -245,15 +245,20 @@ function DetailPanel({
         )}
 
         {/* Icon */}
-        <div className={`mb-4 ${isDesktop ? "" : ""}`}>
+        <div
+          className="relative w-24 h-24 rounded-[2rem] flex items-center justify-center shadow-md shrink-0 mb-6"
+          style={{
+            background: `linear-gradient(135deg, ${item.gradient[0]}, ${item.gradient[1]})`,
+          }}
+        >
           {isImageIcon(item.icon) ? (
             <img
               src={item.icon}
               alt={item.name}
-              className={`object-contain ${isDesktop ? "w-14 h-14" : "w-10 h-10"}`}
+              className="w-full h-full object-cover rounded-[2rem] drop-shadow-sm"
             />
           ) : (
-            <span className={isDesktop ? "text-5xl" : "text-4xl"}>
+            <span className="text-5xl drop-shadow-sm select-none">
               {item.icon}
             </span>
           )}

@@ -227,34 +227,6 @@ body {
   flex-direction: column;
 }
 
-/* iPad home indicator bar */
-.ipad-home-bar {
-  display: flex;
-  justify-content: center;
-  padding: 6px 0 4px;
-  background: transparent;
-}
-
-.ipad-home-bar button {
-  width: 100px;
-  height: 5px;
-  border-radius: 3px;
-  background: rgba(0, 0, 0, 0.15);
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  padding: 0;
-}
-
-.ipad-home-bar button:hover {
-  background: rgba(0, 0, 0, 0.3);
-  transform: scaleX(1.1);
-}
-
-.ipad-home-bar button:active {
-  transform: scaleX(0.9);
-}
-
 /* ─── iPadOS App Open Animation ─── */
 .detail-panel-desktop {
   animation: ipadAppOpen 0.48s cubic-bezier(0.2, 0.8, 0.2, 1) both;

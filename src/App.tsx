@@ -354,14 +354,17 @@ function DetailPanel({
         )}
       </div>
 
-      {/* iPad home indicator (desktop) */}
+      {/* iPad physical home button (desktop) */}
       {isDesktop && (
-        <div className="ipad-home-bar bg-aster-beige">
+        <div className="flex justify-center py-3 bg-aster-beige">
           <button
             type="button"
             onClick={onClose}
-            aria-label="Fechar app"
-          />
+            className="home-btn w-14 h-14 rounded-full bg-aster-beige-dark/90 border-2 border-aster-dark/10 shadow-cel-sm flex items-center justify-center cursor-pointer hover:bg-aster-beige-dark transition-colors"
+            aria-label="Botão Home — fechar app"
+          >
+            <div className="w-4 h-4 rounded-sm border-2 border-aster-dark/40" />
+          </button>
         </div>
       )}
 
@@ -713,7 +716,7 @@ export default function App() {
           <div className="flex-1 max-w-[1400px] h-[750px] relative z-10">
             {selectedDetail ? (
               <div className="ipad-shell w-full h-full">
-                <div className="ipad-screen bg-aster-beige">
+                <div className="ipad-screen">
                   <DetailPanel
                     item={selectedDetail}
                     onClose={closeDetail}

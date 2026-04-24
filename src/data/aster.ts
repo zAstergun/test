@@ -10,6 +10,7 @@ export interface AppItem {
   summary: string;
   links: AsterLink[];
   tags: string[];
+  previewMedia?: string;
 }
 
 /** An external link that opens in a new tab */
@@ -42,6 +43,7 @@ export interface ProjectItem {
   summary: string;
   links: AsterLink[];
   tags: string[];
+  previewMedia?: string;
 }
 
 export interface AsterLink {
@@ -89,6 +91,7 @@ export const HOME_ITEMS: GridItem[] = [
       { name: "Email", url: "mailto:contact@aster.dev" },
     ],
     tags: ["Frontend", "Mobile", "UI/UX"],
+    previewMedia: "https://placehold.co/600x400/6c63ff/ffffff?text=Sobre+Mim",
   },
   {
     type: "app",
@@ -100,6 +103,7 @@ export const HOME_ITEMS: GridItem[] = [
       "Currículo profissional interativo. Experiência em Frontend & Mobile com foco em React, React Native e TypeScript.",
     links: [{ name: "Download PDF", url: "#" }],
     tags: ["Carreira", "Frontend", "Mobile"],
+    previewMedia: "https://placehold.co/600x400/e84393/ffffff?text=Curriculo",
   },
   {
     type: "link",
@@ -126,6 +130,7 @@ export const HOME_ITEMS: GridItem[] = [
           "Wiki completa para o ecossistema PEX. Interface responsiva construída com foco em performance e acessibilidade.",
         links: [{ name: "Visitar Wiki", url: "#" }],
         tags: ["React", "TypeScript", "Wiki"],
+        previewMedia: "https://placehold.co/600x400/6c63ff/ffffff?text=PEX+Wiki",
       },
       {
         type: "project",
@@ -137,6 +142,7 @@ export const HOME_ITEMS: GridItem[] = [
           "Ferramenta de cálculo de raridade com algoritmos otimizados. Design premium com feedback visual em tempo real.",
         links: [{ name: "Abrir Calculadora", url: "#" }],
         tags: ["JavaScript", "Algoritmos", "UI/UX"],
+        previewMedia: "https://placehold.co/600x400/00cec9/ffffff?text=Calc+Raridade",
       },
     ],
   },
@@ -157,6 +163,7 @@ export const HOME_ITEMS: GridItem[] = [
           "Aplicação mobile de demonstração construída com React Native. Arquitetura limpa, navegação fluida e design system customizado.",
         links: [{ name: "Ver Demo", url: "#" }],
         tags: ["React Native", "Expo", "Mobile"],
+        previewMedia: "https://placehold.co/600x400/e17055/ffffff?text=App+Demo",
       },
     ],
   },

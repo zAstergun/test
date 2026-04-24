@@ -142,6 +142,56 @@ function GridIcon({
   );
 }
 
+function PreviewVisual({
+  src,
+  alt,
+  isDesktop,
+}: {
+  src: string;
+  alt: string;
+  isDesktop: boolean;
+}) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  if (error) return null;
+
+  return (
+    <div
+      className={`relative overflow-hidden ${
+        isDesktop
+          ? "rounded-2xl mt-10 max-w-3xl"
+          : "rounded-2xl border-2 border-aster-dark/10 shadow-cel-sm mt-8 mx-0"
+      }`}
+    >
+      {/* Skeleton placeholder */}
+      {!loaded && (
+        <div
+          className={`preview-skeleton w-full bg-aster-dark/[0.06] ${
+            isDesktop ? "h-[340px] rounded-2xl" : "h-[200px] rounded-2xl"
+          }`}
+        />
+      )}
+
+      {/* Actual image */}
+      <img
+        src={src}
+        alt={alt}
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+        className={`w-full object-cover transition-opacity duration-500 ${
+          isDesktop ? "max-h-[400px] rounded-2xl" : "max-h-[240px] rounded-2xl"
+        } ${loaded ? "opacity-100" : "opacity-0 absolute inset-0"}`}
+      />
+
+      {/* Subtle gradient overlay on desktop for premium feel */}
+      {isDesktop && loaded && (
+        <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-aster-dark/[0.06] pointer-events-none" />
+      )}
+    </div>
+  );
+}
+
 function DetailPanel({
   item,
   onClose,
@@ -216,14 +266,32 @@ function DetailPanel({
           Sobre
         </h3>
         <p
-          className={`text-aster-dark/80 leading-relaxed mb-10 ${
-            isDesktop ? "text-base max-w-2xl" : "text-sm"
+          className={`text-aster-dark/80 leading-relaxed ${
+            isDesktop ? "text-base max-w-2xl mb-0" : "text-sm mb-8"
           }`}
         >
           {item.summary}
         </p>
 
-        <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4">
+        {/* Preview Visual — desktop: prominent below summary */}
+        {isDesktop && item.previewMedia && (
+          <>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4 mt-10">
+              Preview
+            </h3>
+            <PreviewVisual
+              src={item.previewMedia}
+              alt={`Preview de ${item.name}`}
+              isDesktop={isDesktop}
+            />
+          </>
+        )}
+
+        <h3
+          className={`text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4 ${
+            isDesktop ? "mt-10" : "mt-2"
+          }`}
+        >
           Links
         </h3>
         <div
@@ -249,6 +317,20 @@ function DetailPanel({
             </a>
           ))}
         </div>
+
+        {/* Preview Visual — mobile: after links, with cel-shading border */}
+        {!isDesktop && item.previewMedia && (
+          <>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4 mt-8">
+              Preview
+            </h3>
+            <PreviewVisual
+              src={item.previewMedia}
+              alt={`Preview de ${item.name}`}
+              isDesktop={isDesktop}
+            />
+          </>
+        )}
       </div>
 
       {/* Bottom safe area for floating home button (mobile) */}

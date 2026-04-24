@@ -356,6 +356,13 @@ function DetailPanel({
         )}
       </div>
 
+      {/* Divisória minimalista (Desktop) */}
+      {isDesktop && (
+        <div className="w-full px-12 bg-aster-beige shrink-0">
+          <div className="w-full h-[1px] bg-aster-dark/[0.08]" />
+        </div>
+      )}
+
       {/* iPad physical home button (desktop) */}
       {isDesktop && (
         <div className="flex justify-center py-3 bg-aster-beige">

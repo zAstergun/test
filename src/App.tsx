@@ -1,14 +1,24 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { PROJECTS, GRID_COLS, type AsterProject } from "./data/aster";
+import {
+  HOME_ITEMS,
+  GRID_COLS,
+  isDetailable,
+  isFolder,
+  isLink,
+  type GridItem,
+  type DetailableItem,
+  type FolderItem,
+} from "./data/aster";
 
 // ─── Helpers ─────────────────────────────────────────────────
 
-/** Clamp index within valid project bounds */
+/** Clamp index within valid bounds — never returns < 0 or >= total */
 function clampIndex(index: number, total: number): number {
+  if (total <= 0) return 0;
   return Math.max(0, Math.min(index, total - 1));
 }
 
-/** Format current time like a phone status bar */
+/** Hook: live clock string for the status bar */
 function useClockTime(): string {
   const [time, setTime] = useState(() =>
     new Date().toLocaleTimeString(undefined, {
@@ -34,7 +44,23 @@ function useClockTime(): string {
   return time;
 }
 
-// ─── Components ──────────────────────────────────────────────
+/** Hook: detect if viewport matches `md` breakpoint (768px) */
+function useIsDesktop(): boolean {
+  const [isDesktop, setIsDesktop] = useState(
+    () => window.matchMedia("(min-width: 768px)").matches
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 768px)");
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+
+  return isDesktop;
+}
+
+// ─── Sub-components ──────────────────────────────────────────
 
 function StatusBar({ time }: { time: string }) {
   return (
@@ -51,40 +77,56 @@ function StatusBar({ time }: { time: string }) {
   );
 }
 
-function AppIcon({
-  project,
+function GridIcon({
+  item,
   isFocused,
   onClick,
+  onHover,
 }: {
-  project: AsterProject;
+  item: GridItem;
   isFocused: boolean;
   onClick: () => void;
+  onHover: () => void;
 }) {
+  const isFolder_ = item.type === "folder";
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`app-icon flex flex-col items-center gap-2 p-2 rounded-2xl transition-all duration-200 cursor-pointer ${
+      onMouseEnter={onHover}
+      className={`app-icon relative flex flex-col items-center gap-2 p-2 rounded-2xl transition-all duration-200 cursor-pointer ${
         isFocused ? "focused" : ""
       }`}
-      aria-label={`Abrir ${project.name}`}
+      aria-label={
+        isFolder_
+          ? `Abrir pasta ${item.name}`
+          : item.type === "link"
+          ? `Abrir ${item.name}`
+          : `Ver ${item.name}`
+      }
     >
-      {/* Icon Container */}
+      {/* Focus ring — asymmetric inset to balance the 5px cel-shading shadow */}
+      {isFocused && (
+        <div className="absolute -top-[3px] -left-[3px] -bottom-[8px] -right-[8px] rounded-2xl border-2 border-aster-accent/60 animate-pulse-glow pointer-events-none" />
+      )}
+
+      {/* Icon */}
       <div
         className={`relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl transition-all duration-200 ${
-          isFocused
-            ? "shadow-cel scale-105"
-            : "shadow-md hover:shadow-cel-sm"
+          isFocused ? "shadow-cel scale-105" : "shadow-md hover:shadow-cel-sm"
         }`}
         style={{
-          background: `linear-gradient(135deg, ${project.gradient[0]}, ${project.gradient[1]})`,
+          background: `linear-gradient(135deg, ${item.gradient[0]}, ${item.gradient[1]})`,
         }}
       >
-        <span className="drop-shadow-sm select-none">{project.icon}</span>
+        <span className="drop-shadow-sm select-none">{item.icon}</span>
 
-        {/* Focus indicator ring */}
-        {isFocused && (
-          <div className="absolute -inset-1 rounded-2xl border-2 border-aster-accent/60 animate-pulse-glow pointer-events-none" />
+        {/* Folder badge */}
+        {isFolder_ && (
+          <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-aster-beige border-2 border-white shadow-sm flex items-center justify-center text-[9px]">
+            📂
+          </span>
         )}
       </div>
 
@@ -94,44 +136,64 @@ function AppIcon({
           isFocused ? "text-aster-dark font-semibold" : "text-aster-dark/70"
         }`}
       >
-        {project.name}
+        {item.name}
       </span>
     </button>
   );
 }
 
 function DetailPanel({
-  project,
+  item,
   onClose,
+  isDesktop,
 }: {
-  project: AsterProject;
+  item: DetailableItem;
   onClose: () => void;
+  isDesktop: boolean;
 }) {
+  // On desktop this renders in the side panel, on mobile as overlay
+  const containerClass = isDesktop
+    ? "flex flex-col h-full bg-aster-beige animate-fade-in rounded-3xl overflow-hidden shadow-2xl"
+    : "detail-panel absolute inset-0 z-30 bg-aster-beige flex flex-col";
+
   return (
-    <div className="detail-panel absolute inset-0 z-30 bg-aster-beige flex flex-col">
+    <div className={containerClass}>
       {/* Header */}
       <div
-        className="relative h-28 flex items-end px-5 pb-4"
+        className={`relative flex items-end px-6 pb-5 ${
+          isDesktop ? "h-44 rounded-t-3xl" : "h-28"
+        }`}
         style={{
-          background: `linear-gradient(135deg, ${project.gradient[0]}, ${project.gradient[1]})`,
+          background: `linear-gradient(135deg, ${item.gradient[0]}, ${item.gradient[1]})`,
         }}
       >
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/30 transition-colors cursor-pointer"
-          aria-label="Voltar"
-        >
-          ←
-        </button>
-        <div className="flex items-center gap-3">
-          <span className="text-3xl drop-shadow-md">{project.icon}</span>
+        {/* Back button (mobile only — desktop uses phone nav) */}
+        {!isDesktop && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/30 transition-colors cursor-pointer"
+            aria-label="Voltar"
+          >
+            ←
+          </button>
+        )}
+        <div className="flex items-center gap-4">
+          <span
+            className={`drop-shadow-md ${isDesktop ? "text-5xl" : "text-3xl"}`}
+          >
+            {item.icon}
+          </span>
           <div>
-            <h2 className="text-white font-bold text-lg leading-tight drop-shadow-sm">
-              {project.name}
+            <h2
+              className={`text-white font-bold leading-tight drop-shadow-sm ${
+                isDesktop ? "text-2xl" : "text-lg"
+              }`}
+            >
+              {item.name}
             </h2>
-            <div className="flex gap-1.5 mt-1">
-              {project.tags.map((tag) => (
+            <div className="flex flex-wrap gap-1.5 mt-1.5">
+              {item.tags.map((tag) => (
                 <span
                   key={tag}
                   className="tag-chip bg-white/20 text-white/90 backdrop-blur-sm"
@@ -145,25 +207,35 @@ function DetailPanel({
       </div>
 
       {/* Body */}
-      <div className="flex-1 px-5 py-5 overflow-y-auto">
+      <div
+        className={`flex-1 overflow-y-auto ${
+          isDesktop ? "px-8 py-8" : "px-5 py-5"
+        }`}
+      >
         <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-2">
           Sobre
         </h3>
-        <p className="text-sm text-aster-dark/80 leading-relaxed mb-6">
-          {project.summary}
+        <p
+          className={`text-aster-dark/80 leading-relaxed mb-8 ${
+            isDesktop ? "text-base max-w-xl" : "text-sm"
+          }`}
+        >
+          {item.summary}
         </p>
 
         <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-3">
           Links
         </h3>
-        <div className="flex flex-col gap-2">
-          {project.links.map((link) => (
+        <div
+          className={`flex flex-col gap-2 ${isDesktop ? "max-w-md" : ""}`}
+        >
+          {item.links.map((link) => (
             <a
               key={link.name}
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-aster-beige-dark/60 border border-aster-dark/8 hover:bg-aster-beige-dark hover:shadow-cel-sm transition-all duration-200 group"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-aster-beige-dark/60 border border-aster-dark/[0.08] hover:bg-aster-beige-dark hover:shadow-cel-sm transition-all duration-200 group"
             >
               <span className="text-base">🔗</span>
               <span className="text-sm font-medium text-aster-dark/80 group-hover:text-aster-accent transition-colors">
@@ -177,20 +249,36 @@ function DetailPanel({
         </div>
       </div>
 
-      {/* Bottom safe area */}
-      <div className="h-6 bg-aster-beige" />
+      {/* Bottom safe area for floating home button (mobile) */}
+      {!isDesktop && <div className="h-20 bg-aster-beige" />}
     </div>
   );
 }
 
-function KeyHint() {
+function HomeButton({ onClick }: { onClick: () => void }) {
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-40 flex justify-center pb-5 pt-3 pointer-events-none">
+      <button
+        type="button"
+        onClick={onClick}
+        className="home-btn pointer-events-auto w-14 h-14 rounded-full bg-aster-beige-dark/90 border-2 border-aster-dark/10 shadow-cel-sm backdrop-blur-md flex items-center justify-center cursor-pointer"
+        aria-label="Botão Home — fechar app"
+      >
+        <div className="w-4 h-4 rounded-sm border-2 border-aster-dark/40" />
+      </button>
+    </div>
+  );
+}
+
+function KeyHint({ isDesktop }: { isDesktop: boolean }) {
+  if (!isDesktop) return null;
   return (
     <div className="flex items-center justify-center gap-3 py-2 animate-fade-in">
       <div className="flex gap-1">
         {["W", "A", "S", "D"].map((key) => (
           <kbd
             key={key}
-            className="w-5 h-5 rounded text-[9px] font-mono font-bold bg-aster-dark/8 text-aster-dark/40 flex items-center justify-center border border-aster-dark/10"
+            className="w-5 h-5 rounded text-[9px] font-mono font-bold bg-aster-dark/[0.08] text-aster-dark/40 flex items-center justify-center border border-aster-dark/10"
           >
             {key}
           </kbd>
@@ -199,10 +287,39 @@ function KeyHint() {
       <span className="text-[9px] text-aster-dark/30 font-medium">
         navegar
       </span>
-      <kbd className="px-2 h-5 rounded text-[9px] font-mono font-bold bg-aster-dark/8 text-aster-dark/40 flex items-center justify-center border border-aster-dark/10">
+      <kbd className="px-2 h-5 rounded text-[9px] font-mono font-bold bg-aster-dark/[0.08] text-aster-dark/40 flex items-center justify-center border border-aster-dark/10">
         Enter
       </kbd>
       <span className="text-[9px] text-aster-dark/30 font-medium">abrir</span>
+    </div>
+  );
+}
+
+function FolderHeader({
+  folder,
+  onBack,
+}: {
+  folder: FolderItem;
+  onBack: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-2 px-5 pt-4 pb-2">
+      <button
+        type="button"
+        onClick={onBack}
+        className="w-7 h-7 rounded-full bg-aster-dark/[0.06] flex items-center justify-center text-aster-dark/50 hover:bg-aster-dark/10 transition-colors cursor-pointer text-sm"
+        aria-label="Voltar para Home"
+      >
+        ←
+      </button>
+      <span className="text-sm">{folder.icon}</span>
+      <h2 className="text-sm font-bold text-aster-dark tracking-tight">
+        {folder.name}
+      </h2>
+      <span className="text-[10px] text-aster-dark/30 font-medium ml-auto">
+        {folder.children.length}{" "}
+        {folder.children.length === 1 ? "projeto" : "projetos"}
+      </span>
     </div>
   );
 }
@@ -211,58 +328,123 @@ function KeyHint() {
 
 export default function App() {
   const [focusedIndex, setFocusedIndex] = useState(0);
-  const [selectedProject, setSelectedProject] = useState<AsterProject | null>(
+  const [selectedDetail, setSelectedDetail] = useState<DetailableItem | null>(
     null
   );
+  const [openFolder, setOpenFolder] = useState<FolderItem | null>(null);
   const time = useClockTime();
+  const isDesktop = useIsDesktop();
 
-  /** Safe focused index — always within array bounds */
+  /** Items currently visible in the phone grid */
+  const currentItems: GridItem[] = useMemo(
+    () => (openFolder ? openFolder.children : HOME_ITEMS),
+    [openFolder]
+  );
+
+  /** Clamped index — always safe for the current grid */
   const safeFocusedIndex = useMemo(
-    () => clampIndex(focusedIndex, PROJECTS.length),
-    [focusedIndex]
+    () => clampIndex(focusedIndex, currentItems.length),
+    [focusedIndex, currentItems.length]
+  );
+
+  // ─── Actions ───────────────────────────────────────────────
+
+  const goHome = useCallback(() => {
+    setOpenFolder(null);
+    setSelectedDetail(null);
+    setFocusedIndex(0);
+  }, []);
+
+  const goBackFromFolder = useCallback(() => {
+    setOpenFolder(null);
+    setFocusedIndex(0);
+  }, []);
+
+  const closeDetail = useCallback(() => {
+    setSelectedDetail(null);
+  }, []);
+
+  const activateItem = useCallback(
+    (item: GridItem, index: number) => {
+      setFocusedIndex(index);
+
+      if (isLink(item)) {
+        window.open(item.url, "_blank", "noopener,noreferrer");
+        return;
+      }
+      if (isFolder(item)) {
+        setOpenFolder(item);
+        setSelectedDetail(null);
+        setFocusedIndex(0); // Reset focus for the new grid
+        return;
+      }
+      if (isDetailable(item)) {
+        setSelectedDetail(item);
+      }
+    },
+    []
   );
 
   // ─── Keyboard Navigation ──────────────────────────────────
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      // If detail panel is open, only listen for Escape/Backspace
-      if (selectedProject) {
+      // Detail open on mobile — only Escape closes
+      if (selectedDetail && !isDesktop) {
         if (e.key === "Escape" || e.key === "Backspace") {
           e.preventDefault();
-          setSelectedProject(null);
+          closeDetail();
         }
         return;
       }
 
-      const total = PROJECTS.length;
+      // Detail open on desktop — Escape closes detail
+      if (selectedDetail && isDesktop) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          closeDetail();
+          return;
+        }
+        // On desktop, allow grid nav even with detail open
+      }
+
+      const total = currentItems.length;
       const cols = GRID_COLS;
 
       const keyActions: Record<string, () => void> = {
-        // Move right
         ArrowRight: () => setFocusedIndex((i) => clampIndex(i + 1, total)),
         d: () => setFocusedIndex((i) => clampIndex(i + 1, total)),
         D: () => setFocusedIndex((i) => clampIndex(i + 1, total)),
 
-        // Move left
         ArrowLeft: () => setFocusedIndex((i) => clampIndex(i - 1, total)),
         a: () => setFocusedIndex((i) => clampIndex(i - 1, total)),
         A: () => setFocusedIndex((i) => clampIndex(i - 1, total)),
 
-        // Move down
         ArrowDown: () =>
           setFocusedIndex((i) => clampIndex(i + cols, total)),
         s: () => setFocusedIndex((i) => clampIndex(i + cols, total)),
         S: () => setFocusedIndex((i) => clampIndex(i + cols, total)),
 
-        // Move up
-        ArrowUp: () => setFocusedIndex((i) => clampIndex(i - cols, total)),
+        ArrowUp: () =>
+          setFocusedIndex((i) => clampIndex(i - cols, total)),
         w: () => setFocusedIndex((i) => clampIndex(i - cols, total)),
         W: () => setFocusedIndex((i) => clampIndex(i - cols, total)),
 
-        // Select
         Enter: () => {
-          const project = PROJECTS[safeFocusedIndex];
-          if (project) setSelectedProject(project);
+          const item = currentItems[safeFocusedIndex];
+          if (item) activateItem(item, safeFocusedIndex);
+        },
+
+        Escape: () => {
+          if (openFolder) {
+            goBackFromFolder();
+          }
+        },
+
+        Backspace: () => {
+          if (openFolder) {
+            goBackFromFolder();
+          }
         },
       };
 
@@ -272,7 +454,16 @@ export default function App() {
         action();
       }
     },
-    [selectedProject, safeFocusedIndex]
+    [
+      selectedDetail,
+      isDesktop,
+      currentItems,
+      safeFocusedIndex,
+      openFolder,
+      closeDetail,
+      activateItem,
+      goBackFromFolder,
+    ]
   );
 
   useEffect(() => {
@@ -280,87 +471,148 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // ─── Render ────────────────────────────────────────────────
+  // ─── Phone Screen Content ─────────────────────────────────
 
-  return (
-    <div className="min-h-screen w-full bg-aster-dark flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Ambient background glows */}
-      <div
-        className="ambient-glow"
-        style={{ top: "-10%", left: "20%", background: "#6c63ff" }}
-      />
-      <div
-        className="ambient-glow"
-        style={{ bottom: "-10%", right: "15%", background: "#00cec9" }}
-      />
+  const phoneContent = (
+    <>
+      <StatusBar time={time} />
 
-      {/* Brand watermark */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-10 select-none">
-        <span className="text-white/10 text-xs font-mono tracking-[0.3em] uppercase">
-          Aster Dev
-        </span>
-      </div>
-
-      {/* Phone Shell */}
-      <div className="phone-shell w-full max-w-[360px] aspect-[9/18] relative z-10">
-        <div className="phone-screen w-full h-full bg-aster-beige flex flex-col relative">
-          {/* Status Bar */}
-          <StatusBar time={time} />
-
-          {/* Header Area */}
-          <div className="px-5 pt-4 pb-2">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-2 h-2 rounded-full bg-aster-accent animate-pulse" />
-              <h1 className="text-lg font-extrabold text-aster-dark tracking-tight">
-                Aster<span className="text-aster-accent">Dev</span>
-              </h1>
-            </div>
-            <p className="text-[11px] text-aster-dark/40 font-medium tracking-wide">
-              Frontend &amp; Mobile Development
-            </p>
+      {/* Header / Folder header */}
+      {openFolder ? (
+        <FolderHeader folder={openFolder} onBack={goBackFromFolder} />
+      ) : (
+        <div className="px-5 pt-4 pb-2">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-2 h-2 rounded-full bg-aster-accent animate-pulse" />
+            <h1 className="text-lg font-extrabold text-aster-dark tracking-tight">
+              Aster<span className="text-aster-accent">Dev</span>
+            </h1>
           </div>
+          <p className="text-[11px] text-aster-dark/40 font-medium tracking-wide">
+            Frontend &amp; Mobile Development
+          </p>
+        </div>
+      )}
 
-          {/* App Grid */}
-          <div className="flex-1 px-4 py-3">
-            <div className="grid grid-cols-3 gap-3 justify-items-center">
-              {PROJECTS.map((project, index) => (
-                <AppIcon
-                  key={project.id}
-                  project={project}
-                  isFocused={safeFocusedIndex === index}
-                  onClick={() => {
-                    setFocusedIndex(index);
-                    setSelectedProject(project);
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Keyboard Hints (bottom) */}
-          <KeyHint />
-
-          {/* Bottom bar */}
-          <div className="flex justify-center pb-3 pt-1">
-            <div className="w-28 h-1 rounded-full bg-aster-dark/15" />
-          </div>
-
-          {/* Detail Panel (overlay) */}
-          {selectedProject && (
-            <DetailPanel
-              project={selectedProject}
-              onClose={() => setSelectedProject(null)}
+      {/* Grid */}
+      <div className="flex-1 px-4 py-3 overflow-y-auto">
+        <div className="grid grid-cols-3 gap-3 justify-items-center">
+          {currentItems.map((item, index) => (
+            <GridIcon
+              key={item.id}
+              item={item}
+              isFocused={safeFocusedIndex === index}
+              onClick={() => activateItem(item, index)}
+              onHover={() => setFocusedIndex(index)}
             />
-          )}
+          ))}
         </div>
       </div>
 
-      {/* Bottom brand */}
-      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-center z-10 select-none">
-        <p className="text-white/8 text-[10px] font-mono tracking-widest uppercase">
-          One Person Business · Portfolio
-        </p>
-      </div>
+      {/* Key hints (desktop only) */}
+      <KeyHint isDesktop={isDesktop} />
+
+      {/* Bottom bar (desktop only) */}
+      {isDesktop && (
+        <div className="flex justify-center pb-3 pt-1">
+          <div className="w-28 h-1 rounded-full bg-aster-dark/15" />
+        </div>
+      )}
+
+      {/* Detail Panel as overlay (MOBILE ONLY) */}
+      {selectedDetail && !isDesktop && (
+        <DetailPanel
+          item={selectedDetail}
+          onClose={closeDetail}
+          isDesktop={false}
+        />
+      )}
+    </>
+  );
+
+  // ─── Render ────────────────────────────────────────────────
+
+  return (
+    <div className="min-h-screen w-full bg-aster-dark relative overflow-hidden">
+      {/* Ambient glows (desktop only) */}
+      {isDesktop && (
+        <>
+          <div
+            className="ambient-glow"
+            style={{ top: "-10%", left: "20%", background: "#6c63ff" }}
+          />
+          <div
+            className="ambient-glow"
+            style={{ bottom: "-10%", right: "15%", background: "#00cec9" }}
+          />
+        </>
+      )}
+
+      {/* ── MOBILE LAYOUT ── */}
+      {!isDesktop && (
+        <div className="w-full min-h-screen bg-aster-beige flex flex-col relative">
+          {phoneContent}
+          {/* Floating home button — always visible, even over detail panel */}
+          <HomeButton
+            onClick={
+              selectedDetail
+                ? closeDetail
+                : openFolder
+                ? goBackFromFolder
+                : goHome
+            }
+          />
+        </div>
+      )}
+
+      {/* ── DESKTOP LAYOUT ── */}
+      {isDesktop && (
+        <div className="h-screen w-full flex items-center justify-center gap-8 p-8 relative z-10">
+          {/* Brand watermark */}
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-10 select-none">
+            <span className="text-white/10 text-xs font-mono tracking-[0.3em] uppercase">
+              Aster Dev
+            </span>
+          </div>
+
+          {/* Phone (left) */}
+          <div className="phone-shell flex-shrink-0 w-[340px] h-[680px] relative z-10">
+            <div className="phone-screen w-full h-full bg-aster-beige flex flex-col relative">
+              {phoneContent}
+            </div>
+          </div>
+
+          {/* Detail Panel (right) */}
+          <div className="flex-1 max-w-2xl h-[680px] relative z-10">
+            {selectedDetail ? (
+              <DetailPanel
+                item={selectedDetail}
+                onClose={closeDetail}
+                isDesktop
+              />
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center rounded-3xl bg-aster-dark-lighter/50 border border-white/[0.04]">
+                <span className="text-5xl mb-4 opacity-30 select-none">
+                  📲
+                </span>
+                <p className="text-white/20 text-sm font-medium">
+                  Seleciona um projeto para ver os detalhes
+                </p>
+                <p className="text-white/10 text-xs mt-1 font-mono">
+                  Usa as teclas ou clica no ícone
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom brand */}
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-center z-10 select-none">
+            <p className="text-white/[0.06] text-[10px] font-mono tracking-widest uppercase">
+              One Person Business · Portfolio
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

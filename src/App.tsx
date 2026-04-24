@@ -63,15 +63,15 @@ function useIsDesktop(): boolean {
 
 // ─── Sub-components ──────────────────────────────────────────
 
-function StatusBar({ time }: { time: string }) {
+function StatusBar({ time, isDark }: { time: string; isDark: boolean }) {
   return (
-    <div className="status-bar flex items-center justify-between px-6 py-2 bg-aster-beige/80 relative z-10">
-      <span className="text-xs font-semibold text-aster-dark tracking-wide">
+    <div className={`status-bar flex items-center justify-between px-6 py-2 relative z-10 transition-colors duration-500 ${isDark ? 'bg-zinc-950/80' : 'bg-aster-beige/80'}`}>
+      <span className={`text-xs font-semibold tracking-wide transition-colors duration-500 ${isDark ? 'text-zinc-100' : 'text-aster-dark'}`}>
         {time}
       </span>
       <div className="flex items-center gap-1.5">
-        <div className="w-4 h-2.5 border border-aster-dark/60 rounded-sm relative">
-          <div className="absolute inset-[1px] right-[2px] bg-aster-dark/70 rounded-[1px]" />
+        <div className={`w-4 h-2.5 border rounded-sm relative transition-colors duration-500 ${isDark ? 'border-zinc-400' : 'border-aster-dark/60'}`}>
+          <div className={`absolute inset-[1px] right-[2px] rounded-[1px] transition-colors duration-500 ${isDark ? 'bg-zinc-400' : 'bg-aster-dark/70'}`} />
         </div>
       </div>
     </div>
@@ -83,11 +83,13 @@ function GridIcon({
   isFocused,
   onClick,
   onHover,
+  isDark,
 }: {
   item: GridItem;
   isFocused: boolean;
   onClick: (e: React.MouseEvent) => void;
   onHover: () => void;
+  isDark: boolean;
 }) {
   const isFolder_ = item.type === "folder";
 
@@ -142,7 +144,9 @@ function GridIcon({
       {/* Label */}
       <span
         className={`text-[11px] font-medium leading-tight text-center max-w-[72px] truncate transition-colors duration-200 ${
-          isFocused ? "text-aster-dark font-semibold" : "text-aster-dark/70"
+          isFocused
+            ? (isDark ? "text-zinc-100 font-semibold" : "text-aster-dark font-semibold")
+            : (isDark ? "text-zinc-400" : "text-aster-dark/70")
         }`}
       >
         {item.name}
@@ -207,6 +211,7 @@ function DetailPanel({
   isClosing,
   onAnimationEnd,
   origin,
+  isDark,
 }: {
   item: DetailableItem;
   onClose: () => void;
@@ -214,12 +219,16 @@ function DetailPanel({
   isClosing?: boolean;
   onAnimationEnd?: () => void;
   origin?: { x: string; y: string };
+  isDark?: boolean;
 }) {
   const animClass = isClosing ? "animate-ipadAppClose" : "animate-ipadAppOpen";
+  const panelBg = isDark ? 'bg-zinc-950' : 'bg-aster-beige';
+  const panelText = isDark ? 'text-zinc-100' : 'text-aster-dark';
+  const panelFaint = isDark ? 'text-zinc-500' : 'text-aster-dark/40';
 
   const containerClass = isDesktop
-    ? `detail-panel-desktop absolute inset-0 z-20 flex flex-col bg-aster-beige overflow-hidden ${animClass}`
-    : `detail-panel absolute inset-0 z-30 bg-aster-beige flex flex-col ${animClass}`;
+    ? `detail-panel-desktop absolute inset-0 z-20 flex flex-col ${panelBg} overflow-hidden ${animClass} transition-colors duration-500`
+    : `detail-panel absolute inset-0 z-30 ${panelBg} flex flex-col ${animClass} transition-colors duration-500`;
 
   return (
     <div
@@ -242,7 +251,7 @@ function DetailPanel({
           <button
             type="button"
             onClick={onClose}
-            className="mb-6 w-8 h-8 rounded-full bg-aster-dark/10 flex items-center justify-center text-aster-dark/60 hover:bg-aster-dark/20 transition-colors cursor-pointer"
+            className={`mb-6 w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-aster-dark/10 text-aster-dark/60 hover:bg-aster-dark/20'}`}
             aria-label="Voltar"
           >
             ←
@@ -271,7 +280,7 @@ function DetailPanel({
 
         {/* Name */}
         <h2
-          className={`font-bold text-aster-dark leading-tight ${
+          className={`font-bold leading-tight transition-colors duration-500 ${panelText} ${
             isDesktop ? "text-3xl mb-4" : "text-2xl mb-4"
           }`}
         >
@@ -283,18 +292,18 @@ function DetailPanel({
           {item.tags.map((tag) => (
             <span
               key={tag}
-              className="tag-chip bg-aster-dark/[0.07] text-aster-dark/60"
+              className={`tag-chip ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-aster-dark/[0.07] text-aster-dark/60'}`}
             >
               {tag}
             </span>
           ))}
         </div>
 
-        <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-3">
+        <h3 className={`text-xs font-bold uppercase tracking-widest mb-3 transition-colors duration-500 ${panelFaint}`}>
           Sobre
         </h3>
         <p
-          className={`text-aster-dark/80 leading-relaxed text-justify ${
+          className={`leading-relaxed text-justify transition-colors duration-500 ${isDark ? 'text-zinc-300' : 'text-aster-dark/80'} ${
             isDesktop ? "text-base mb-0" : "text-sm mb-8"
           }`}
         >
@@ -304,7 +313,7 @@ function DetailPanel({
         {/* Preview Visual — desktop */}
         {isDesktop && item.previewMedia && (
           <>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4 mt-8">
+            <h3 className={`text-xs font-bold uppercase tracking-widest mb-4 mt-8 transition-colors duration-500 ${panelFaint}`}>
               Preview
             </h3>
             <PreviewVisual
@@ -317,7 +326,7 @@ function DetailPanel({
         )}
 
         <h3
-          className={`text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4 ${
+          className={`text-xs font-bold uppercase tracking-widest mb-4 transition-colors duration-500 ${panelFaint} ${
             isDesktop ? "mt-10" : "mt-2"
           }`}
         >
@@ -334,13 +343,13 @@ function DetailPanel({
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 px-5 py-3.5 rounded-xl bg-aster-beige-dark/60 border border-aster-dark/[0.08] hover:bg-aster-beige-dark hover:shadow-cel-sm transition-all duration-200 group"
+              className={`flex items-center gap-3 px-5 py-3.5 rounded-xl border transition-all duration-200 group ${isDark ? 'bg-zinc-800/60 border-zinc-700 hover:bg-zinc-800 hover:shadow-cel-sm' : 'bg-aster-beige-dark/60 border-aster-dark/[0.08] hover:bg-aster-beige-dark hover:shadow-cel-sm'}`}
             >
               <span className="text-base">🔗</span>
-              <span className="text-sm font-medium text-aster-dark/80 group-hover:text-aster-accent transition-colors">
+              <span className={`text-sm font-medium group-hover:text-aster-accent transition-colors ${isDark ? 'text-zinc-300' : 'text-aster-dark/80'}`}>
                 {link.name}
               </span>
-              <span className="ml-auto text-aster-dark/30 group-hover:text-aster-accent transition-colors text-xs">
+              <span className={`ml-auto group-hover:text-aster-accent transition-colors text-xs ${isDark ? 'text-zinc-600' : 'text-aster-dark/30'}`}>
                 →
               </span>
             </a>
@@ -350,7 +359,7 @@ function DetailPanel({
         {/* Preview Visual — mobile */}
         {!isDesktop && item.previewMedia && (
           <>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-4 mt-8">
+            <h3 className={`text-xs font-bold uppercase tracking-widest mb-4 mt-8 transition-colors duration-500 ${panelFaint}`}>
               Preview
             </h3>
             <PreviewVisual
@@ -365,27 +374,27 @@ function DetailPanel({
 
       {/* Divisória minimalista (Desktop) */}
       {isDesktop && (
-        <div className="w-full px-12 bg-aster-beige shrink-0">
-          <div className="w-full h-[1px] bg-aster-dark/[0.08]" />
+        <div className={`w-full px-12 shrink-0 transition-colors duration-500 ${panelBg}`}>
+          <div className={`w-full h-[1px] ${isDark ? 'bg-zinc-800' : 'bg-aster-dark/[0.08]'}`} />
         </div>
       )}
 
       {/* iPad physical home button (desktop) */}
       {isDesktop && (
-        <div className="flex justify-center py-3 bg-aster-beige">
+        <div className={`flex justify-center py-3 transition-colors duration-500 ${panelBg}`}>
           <button
             type="button"
             onClick={onClose}
-            className="home-btn w-14 h-14 rounded-full bg-aster-beige-dark/90 border-2 border-aster-dark/10 shadow-cel-sm flex items-center justify-center cursor-pointer hover:bg-aster-beige-dark transition-colors"
+            className={`home-btn w-14 h-14 rounded-full shadow-cel-sm flex items-center justify-center cursor-pointer transition-colors ${isDark ? 'bg-zinc-800 border-2 border-zinc-600 hover:bg-zinc-700' : 'bg-aster-beige-dark/90 border-2 border-aster-dark/10 hover:bg-aster-beige-dark'}`}
             aria-label="Botão Home — fechar app"
           >
-            <div className="w-4 h-4 rounded-sm border-2 border-aster-dark/40" />
+            <div className={`w-4 h-4 rounded-sm border-2 ${isDark ? 'border-zinc-500' : 'border-aster-dark/40'}`} />
           </button>
         </div>
       )}
 
       {/* Bottom safe area for floating home button (mobile) */}
-      {!isDesktop && <div className="h-20 bg-aster-beige" />}
+      {!isDesktop && <div className={`h-20 transition-colors duration-500 ${panelBg}`} />}
     </div>
   );
 }
@@ -477,8 +486,14 @@ export default function App() {
   const [isClosing, setIsClosing] = useState(false);
   const [openFolder, setOpenFolder] = useState<FolderItem | null>(null);
   const [appOrigin, setAppOrigin] = useState({ x: "50%", y: "50%" });
+  const [isDark, setIsDark] = useState(false);
   const time = useClockTime();
   const isDesktop = useIsDesktop();
+
+  // ─── Theme helpers ────────────────────────────────────────
+  const bg = isDark ? 'bg-zinc-950' : 'bg-aster-beige';
+  const text = isDark ? 'text-zinc-100' : 'text-aster-dark';
+  const textFaint = isDark ? 'text-zinc-500' : 'text-aster-dark/40';
 
   // ─── Media Preload ─────────────────────────────────────────
   useEffect(() => {
@@ -525,6 +540,12 @@ export default function App() {
   const activateItem = useCallback(
     (item: GridItem, index: number, e?: React.MouseEvent) => {
       setFocusedIndex(index);
+
+      // ─── Dark Mode toggle — never opens a detail panel ───
+      if (item.id === 'dark-mode') {
+        setIsDark(prev => !prev);
+        return;
+      }
 
       if (isLink(item)) {
         window.open(item.url, "_blank", "noopener,noreferrer");
@@ -651,7 +672,7 @@ export default function App() {
 
   const phoneContent = (
     <>
-      <StatusBar time={time} />
+      <StatusBar time={time} isDark={isDark} />
 
       {/* Header / Folder header */}
       {openFolder ? (
@@ -660,11 +681,11 @@ export default function App() {
         <div className="px-5 pt-4 pb-2">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-2 h-2 rounded-full bg-aster-accent animate-pulse" />
-            <h1 className="text-lg font-extrabold text-aster-dark tracking-tight">
+            <h1 className={`text-lg font-extrabold tracking-tight transition-colors duration-500 ${text}`}>
               Aster<span className="text-aster-accent">Dev</span>
             </h1>
           </div>
-          <p className="text-[11px] text-aster-dark/40 font-medium tracking-wide">
+          <p className={`text-[11px] font-medium tracking-wide transition-colors duration-500 ${textFaint}`}>
             Frontend &amp; Mobile Development
           </p>
         </div>
@@ -680,6 +701,7 @@ export default function App() {
               isFocused={safeFocusedIndex === index}
               onClick={(e) => activateItem(item, index, e)}
               onHover={() => setFocusedIndex(index)}
+              isDark={isDark}
             />
           ))}
         </div>
@@ -708,6 +730,7 @@ export default function App() {
               : undefined
           }
           origin={appOrigin}
+          isDark={isDark}
         />
       )}
     </>
@@ -733,7 +756,7 @@ export default function App() {
 
       {/* ── MOBILE LAYOUT ── */}
       {!isDesktop && (
-        <div className="w-full min-h-screen bg-aster-beige flex flex-col relative">
+        <div className={`w-full min-h-screen flex flex-col relative transition-colors duration-500 ${bg}`}>
           {phoneContent}
           {/* Floating home button — always visible, even over detail panel */}
           <HomeButton
@@ -760,7 +783,7 @@ export default function App() {
 
           {/* Phone (left) */}
           <div className="phone-shell flex-shrink-0 w-[340px] h-[680px] relative z-10">
-            <div className="phone-screen w-full h-full bg-aster-beige flex flex-col relative">
+            <div className={`phone-screen w-full h-full flex flex-col relative transition-colors duration-500 ${bg}`}>
               {phoneContent}
             </div>
           </div>
@@ -835,6 +858,7 @@ export default function App() {
                         : undefined
                     }
                     origin={appOrigin}
+                    isDark={isDark}
                   />
                 )}
               </div>

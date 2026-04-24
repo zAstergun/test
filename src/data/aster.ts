@@ -23,14 +23,14 @@ export interface LinkItem {
   url: string;
 }
 
-/** A folder that contains child projects */
+/** A folder that contains child projects or links */
 export interface FolderItem {
   type: "folder";
   id: string;
   name: string;
   icon: string;
   gradient: [string, string];
-  children: ProjectItem[];
+  children: ProjectItem[] | LinkItem[];
 }
 
 /** A project inside a folder */
@@ -214,6 +214,157 @@ export const HOME_ITEMS: GridItem[] = [
         links: [{ name: "Ver Demo", url: "#" }],
         tags: ["React Native", "Expo", "Mobile"],
         previewMedia: "/previews/app-demo.gif",
+      },
+    ],
+  },
+  {
+    type: "folder",
+    id: "certificacoes",
+    name: "Certificações",
+    icon: "📜",
+    gradient: ["#f5af19", "#f12711"],
+    children: [
+      {
+        type: "project",
+        id: "cert-placeholder",
+        name: "Em Breve",
+        icon: "🎓",
+        gradient: ["#e6d082", "#987c22"],
+        summary: "Espaço reservado para as futuras certificações oficiais e diplomas técnicos.",
+        links: [],
+        tags: ["Certificação"],
+      }
+    ]
+  },
+  {
+    type: "folder",
+    id: "blog",
+    name: "Blog",
+    icon: "✍️",
+    gradient: ["#11998e", "#38ef7d"],
+    children: [
+      {
+        type: "project",
+        id: "blog-placeholder",
+        name: "Hackathons & Projetos",
+        icon: "🚀",
+        gradient: ["#4facfe", "#00f2fe"],
+        summary: "Aqui documentarei meus aprendizados, participações em Hackathons, desafios de código e projetos em grupo. A ideia é mostrar não só o código final, mas o processo de engenharia.",
+        links: [],
+        tags: ["DevLog", "Competição"],
+      }
+    ]
+  },
+  {
+    type: "folder",
+    id: "idiomas",
+    name: "Idiomas",
+    icon: "🌐",
+    gradient: ["#667eea", "#764ba2"],
+    children: [
+      {
+        type: "link",
+        id: "lang-en",
+        name: "English",
+        icon: "🇺🇸",
+        url: "#en",
+        gradient: ["#e2e2e2", "#c9d6ff"],
+      },
+      {
+        type: "link",
+        id: "lang-zh",
+        name: "中文",
+        icon: "🇨🇳",
+        url: "#zh",
+        gradient: ["#ff0844", "#ffb199"],
+      },
+      {
+        type: "link",
+        id: "lang-ko",
+        name: "한국어",
+        icon: "🇰🇷",
+        url: "#ko",
+        gradient: ["#e2e2e2", "#c9d6ff"],
+      },
+      {
+        type: "link",
+        id: "lang-vi",
+        name: "Tiếng Việt",
+        icon: "🇻🇳",
+        url: "#vi",
+        gradient: ["#ff0844", "#ffb199"],
+      },
+      {
+        type: "link",
+        id: "lang-id",
+        name: "Bahasa",
+        icon: "🇮🇩",
+        url: "#id",
+        gradient: ["#ff0844", "#e2e2e2"],
+      },
+      {
+        type: "link",
+        id: "lang-ja",
+        name: "日本語",
+        icon: "🇯🇵",
+        url: "#ja",
+        gradient: ["#e2e2e2", "#ff0844"],
+      },
+      {
+        type: "link",
+        id: "lang-es",
+        name: "Español",
+        icon: "🇪🇸",
+        url: "#es",
+        gradient: ["#f6d365", "#fda085"],
+      },
+      {
+        type: "link",
+        id: "lang-fr",
+        name: "Français",
+        icon: "🇫🇷",
+        url: "#fr",
+        gradient: ["#e2e2e2", "#c9d6ff"],
+      },
+      {
+        type: "link",
+        id: "lang-de",
+        name: "Deutsch",
+        icon: "🇩🇪",
+        url: "#de",
+        gradient: ["#f5af19", "#e2e2e2"],
+      },
+      {
+        type: "link",
+        id: "lang-it",
+        name: "Italiano",
+        icon: "🇮🇹",
+        url: "#it",
+        gradient: ["#38ef7d", "#e2e2e2"],
+      },
+      {
+        type: "link",
+        id: "lang-nl",
+        name: "Nederlands",
+        icon: "🇳🇱",
+        url: "#nl",
+        gradient: ["#f6d365", "#fda085"],
+      },
+      {
+        type: "link",
+        id: "lang-ru",
+        name: "Русский",
+        icon: "🇷🇺",
+        url: "#ru",
+        gradient: ["#e2e2e2", "#c9d6ff"],
+      },
+      {
+        type: "link",
+        id: "lang-ar",
+        name: "العربية",
+        icon: "🇸🇦",
+        url: "#ar",
+        gradient: ["#11998e", "#e2e2e2"],
       },
     ],
   },

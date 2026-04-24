@@ -485,7 +485,7 @@ export default function App() {
     HOME_ITEMS.forEach(folder => {
       if (folder.type === 'folder') {
         folder.children.forEach(item => {
-          if (item.type === 'detailable' && item.previewMedia) {
+          if (item.type === 'project' && item.previewMedia) {
             const img = new Image();
             img.src = item.previewMedia;
           }

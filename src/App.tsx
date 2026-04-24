@@ -289,8 +289,8 @@ function DetailPanel({
           Sobre
         </h3>
         <p
-          className={`text-aster-dark/80 leading-relaxed ${
-            isDesktop ? "text-base max-w-2xl mb-0" : "text-sm mb-8"
+          className={`text-aster-dark/80 leading-relaxed text-justify ${
+            isDesktop ? "text-base mb-0" : "text-sm mb-8"
           }`}
         >
           {item.summary}

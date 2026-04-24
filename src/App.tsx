@@ -223,6 +223,7 @@ function DetailPanel({
   return (
     <div
       className={containerClass}
+      style={{ willChange: 'transform, opacity' }}
       key={item.id}
       onAnimationEnd={onAnimationEnd}
     >
@@ -472,6 +473,20 @@ export default function App() {
   const time = useClockTime();
   const isDesktop = useIsDesktop();
 
+  // ─── Media Preload ─────────────────────────────────────────
+  useEffect(() => {
+    HOME_ITEMS.forEach(folder => {
+      if (folder.type === 'folder') {
+        folder.children.forEach(item => {
+          if (item.type === 'detailable' && item.previewMedia) {
+            const img = new Image();
+            img.src = item.previewMedia;
+          }
+        });
+      }
+    });
+  }, []);
+
   /** Items currently visible in the phone grid */
   const currentItems: GridItem[] = useMemo(
     () => (openFolder ? openFolder.children : HOME_ITEMS),
@@ -488,7 +503,6 @@ export default function App() {
 
   const goHome = useCallback(() => {
     setOpenFolder(null);
-    setIsClosing(true);
     setFocusedIndex(0);
   }, []);
 
@@ -664,7 +678,7 @@ export default function App() {
       )}
 
       {/* Detail Panel as overlay (MOBILE ONLY) */}
-      {(selectedDetail || isClosing) && !isDesktop && (
+      {selectedDetail && !isDesktop && (
         <DetailPanel
           item={selectedDetail!}
           onClose={closeDetail}
@@ -790,7 +804,7 @@ export default function App() {
                 </div>
 
                 {/* DetailPanel — absolute overlay, covers the full screen */}
-                {(selectedDetail || isClosing) && (
+                {selectedDetail && (
                   <DetailPanel
                     item={selectedDetail!}
                     onClose={closeDetail}

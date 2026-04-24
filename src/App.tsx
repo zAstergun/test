@@ -155,56 +155,46 @@ function PreviewVisual({
   src,
   alt,
   isDesktop,
+  isClosing,
 }: {
   src: string;
   alt: string;
   isDesktop: boolean;
+  isClosing?: boolean;
 }) {
+  const [shouldRender, setShouldRender] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
-  const [shouldMount, setShouldMount] = useState(!isDesktop);
 
   useEffect(() => {
-    if (isDesktop) {
-      const timer = setTimeout(() => setShouldMount(true), 500);
+    if (isClosing) {
+      // Eager unmount: destroy media DOM the millisecond closing starts
+      setShouldRender(false);
+      setLoaded(false);
+    } else {
+      // Lazy mount: only create media after entry animation finishes (450ms)
+      const timer = setTimeout(() => setShouldRender(true), 450);
       return () => clearTimeout(timer);
     }
-  }, [isDesktop]);
-
-  if (!shouldMount) return null;
-  if (error) return null;
+  }, [isClosing]);
 
   return (
     <div
-      className={`relative overflow-hidden ${
+      className={`relative overflow-hidden w-full bg-aster-dark/[0.04] ${
         isDesktop
-          ? "rounded-2xl mt-10 max-w-3xl"
-          : "rounded-2xl border-2 border-aster-dark/10 shadow-cel-sm mt-8 mx-0"
+          ? "rounded-2xl mt-10 h-[340px]"
+          : "rounded-2xl border border-aster-dark/10 mt-8 mx-0 h-[200px]"
       }`}
+      style={{ transform: "translateZ(0)" }} // Force isolated hardware-accelerated layer
     >
-      {/* Skeleton placeholder */}
-      {!loaded && (
-        <div
-          className={`preview-skeleton w-full bg-aster-dark/[0.06] ${
-            isDesktop ? "h-[340px] rounded-2xl" : "h-[200px] rounded-2xl"
+      {shouldRender && (
+        <img
+          src={src}
+          alt={alt}
+          onLoad={() => setLoaded(true)}
+          className={`w-full h-full object-cover transition-opacity duration-500 ${
+            loaded ? "opacity-100" : "opacity-0 absolute inset-0"
           }`}
         />
-      )}
-
-      {/* Actual image */}
-      <img
-        src={src}
-        alt={alt}
-        onLoad={() => setLoaded(true)}
-        onError={() => setError(true)}
-        className={`w-full object-cover transition-opacity duration-500 ${
-          isDesktop ? "max-h-[400px] rounded-2xl" : "max-h-[240px] rounded-2xl"
-        } ${loaded ? "opacity-100" : "opacity-0 absolute inset-0"}`}
-      />
-
-      {/* Subtle gradient overlay on desktop for premium feel */}
-      {isDesktop && loaded && (
-        <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-aster-dark/[0.06] pointer-events-none" />
       )}
     </div>
   );
@@ -316,6 +306,7 @@ function DetailPanel({
               src={item.previewMedia}
               alt={`Preview de ${item.name}`}
               isDesktop={isDesktop}
+              isClosing={isClosing}
             />
           </>
         )}
@@ -361,6 +352,7 @@ function DetailPanel({
               src={item.previewMedia}
               alt={`Preview de ${item.name}`}
               isDesktop={isDesktop}
+              isClosing={isClosing}
             />
           </>
         )}
@@ -399,7 +391,7 @@ function HomeButton({ onClick }: { onClick: () => void }) {
       <button
         type="button"
         onClick={onClick}
-        className="home-btn pointer-events-auto w-14 h-14 rounded-full bg-aster-beige-dark/90 border-2 border-aster-dark/10 shadow-cel-sm backdrop-blur-md flex items-center justify-center cursor-pointer"
+        className="home-btn pointer-events-auto w-14 h-14 rounded-full bg-aster-beige-dark/90 border-2 border-aster-dark/10 shadow-cel-sm flex items-center justify-center cursor-pointer"
         aria-label="Botão Home — fechar app"
       >
         <div className="w-4 h-4 rounded-sm border-2 border-aster-dark/40" />

@@ -226,72 +226,60 @@ function DetailPanel({
       key={item.id}
       onAnimationEnd={onAnimationEnd}
     >
-      {/* Header */}
+      {/* Body — unified scroll area with title at top */}
       <div
-        className={`relative flex items-end ${
-          isDesktop ? "h-48 px-12 pb-8" : "h-28 px-6 pb-5"
+        className={`flex-1 overflow-y-auto ${isDesktop ? "ipad-content-reveal" : ""} ${
+          isDesktop ? "px-12 py-10" : "px-6 py-8"
         }`}
-        style={{
-          background: `linear-gradient(135deg, ${item.gradient[0]}, ${item.gradient[1]})`,
-        }}
       >
         {/* Back button (mobile only) */}
         {!isDesktop && (
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/30 transition-colors cursor-pointer"
+            className="mb-6 w-8 h-8 rounded-full bg-aster-dark/10 flex items-center justify-center text-aster-dark/60 hover:bg-aster-dark/20 transition-colors cursor-pointer"
             aria-label="Voltar"
           >
             ←
           </button>
         )}
-        <div className={`flex items-center gap-5 ${isDesktop ? "ipad-content-reveal" : ""}`}>
+
+        {/* Icon */}
+        <div className={`mb-4 ${isDesktop ? "" : ""}`}>
           {isImageIcon(item.icon) ? (
             <img
               src={item.icon}
               alt={item.name}
-              className={`object-contain drop-shadow-md ${
-                isDesktop ? "w-16 h-16" : "w-9 h-9"
-              }`}
+              className={`object-contain ${isDesktop ? "w-14 h-14" : "w-10 h-10"}`}
             />
           ) : (
-            <span
-              className={`drop-shadow-md ${
-                isDesktop ? "text-6xl" : "text-3xl"
-              }`}
-            >
+            <span className={isDesktop ? "text-5xl" : "text-4xl"}>
               {item.icon}
             </span>
           )}
-          <div>
-            <h2
-              className={`text-white font-bold leading-tight drop-shadow-sm ${
-                isDesktop ? "text-3xl" : "text-lg"
-              }`}
-            >
-              {item.name}
-            </h2>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {item.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="tag-chip bg-white/20 text-white/90 backdrop-blur-sm"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
         </div>
-      </div>
 
-      {/* Body */}
-      <div
-        className={`flex-1 overflow-y-auto ${isDesktop ? "ipad-content-reveal" : ""} ${
-          isDesktop ? "px-12 py-10" : "px-5 py-5"
-        }`}
-      >
+        {/* Name */}
+        <h2
+          className={`font-bold text-aster-dark leading-tight ${
+            isDesktop ? "text-3xl mb-4" : "text-2xl mb-4"
+          }`}
+        >
+          {item.name}
+        </h2>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mb-10">
+          {item.tags.map((tag) => (
+            <span
+              key={tag}
+              className="tag-chip bg-aster-dark/[0.07] text-aster-dark/60"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+
         <h3 className="text-xs font-bold uppercase tracking-widest text-aster-dark/40 mb-3">
           Sobre
         </h3>
@@ -735,63 +723,61 @@ export default function App() {
           {/* Detail Panel (right) — iPad shell frame */}
           <div className="flex-1 max-w-[1400px] h-[750px] relative z-10">
             <div className="ipad-shell w-full h-full">
-              <div className="ipad-screen bg-gradient-to-br from-aster-dark-lighter/90 to-aster-dark-lighter/60">
-                {/* Empty State - Base Layer (always rendered) */}
-                <div className="relative z-10 h-full w-full">
-                  <div className="h-full flex flex-col items-center justify-center relative overflow-hidden">
-                    {/* Decorative ambient circles */}
-                    <div className="absolute top-10 right-16 w-40 h-40 rounded-full bg-aster-accent/[0.04] blur-2xl pointer-events-none" />
-                    <div className="absolute bottom-16 left-12 w-56 h-56 rounded-full bg-[#00cec9]/[0.03] blur-3xl pointer-events-none" />
+              <div className="ipad-screen relative overflow-hidden bg-gradient-to-br from-aster-dark-lighter/90 to-aster-dark-lighter/60">
+                {/* Empty State — wallpaper, fills 100% */}
+                <div className="h-full w-full flex flex-col items-center justify-center relative overflow-hidden">
+                  {/* Decorative ambient circles */}
+                  <div className="absolute top-10 right-16 w-40 h-40 rounded-full bg-aster-accent/[0.04] blur-2xl pointer-events-none" />
+                  <div className="absolute bottom-16 left-12 w-56 h-56 rounded-full bg-[#00cec9]/[0.03] blur-3xl pointer-events-none" />
 
-                    {/* Logo mark */}
-                    <div className="relative mb-6">
-                      <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-aster-accent/20 to-aster-accent/5 border border-aster-accent/10 flex items-center justify-center shadow-lg">
-                        <span className="text-4xl select-none">✦</span>
-                      </div>
-                      <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-aster-accent/60 animate-pulse" />
+                  {/* Logo mark */}
+                  <div className="relative mb-6">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-aster-accent/20 to-aster-accent/5 border border-aster-accent/10 flex items-center justify-center shadow-lg">
+                      <span className="text-4xl select-none">✦</span>
                     </div>
-
-                    {/* Welcome copy */}
-                    <h2 className="text-white/80 text-2xl font-bold tracking-tight mb-2">
-                      Bem-vindo ao <span className="text-aster-accent">AsterDev</span>
-                    </h2>
-                    <p className="text-white/30 text-sm font-medium max-w-sm text-center leading-relaxed mb-6">
-                      Explora o portfólio navegando pelos apps no telemóvel.
-                      Cada projeto abre aqui com todos os detalhes.
-                    </p>
-
-                    {/* Interaction hint */}
-                    <div className="flex items-center gap-4 px-5 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-                      <div className="flex gap-1">
-                        {["W", "A", "S", "D"].map((key) => (
-                          <kbd
-                            key={key}
-                            className="w-6 h-6 rounded-md text-[10px] font-mono font-bold bg-white/[0.06] text-white/30 flex items-center justify-center border border-white/[0.08]"
-                          >
-                            {key}
-                          </kbd>
-                        ))}
-                      </div>
-                      <span className="text-white/20 text-xs font-medium">
-                        navegar
-                      </span>
-                      <div className="w-px h-4 bg-white/10" />
-                      <kbd className="px-3 h-6 rounded-md text-[10px] font-mono font-bold bg-white/[0.06] text-white/30 flex items-center justify-center border border-white/[0.08]">
-                        Enter
-                      </kbd>
-                      <span className="text-white/20 text-xs font-medium">
-                        abrir
-                      </span>
-                    </div>
-
-                    {/* Tagline */}
-                    <p className="text-white/[0.08] text-[10px] font-mono tracking-widest uppercase mt-8">
-                      Frontend · Mobile · Design
-                    </p>
+                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-aster-accent/60 animate-pulse" />
                   </div>
+
+                  {/* Welcome copy */}
+                  <h2 className="text-white/80 text-2xl font-bold tracking-tight mb-2">
+                    Bem-vindo ao <span className="text-aster-accent">AsterDev</span>
+                  </h2>
+                  <p className="text-white/30 text-sm font-medium max-w-sm text-center leading-relaxed mb-6">
+                    Explora o portfólio navegando pelos apps no telemóvel.
+                    Cada projeto abre aqui com todos os detalhes.
+                  </p>
+
+                  {/* Interaction hint */}
+                  <div className="flex items-center gap-4 px-5 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+                    <div className="flex gap-1">
+                      {["W", "A", "S", "D"].map((key) => (
+                        <kbd
+                          key={key}
+                          className="w-6 h-6 rounded-md text-[10px] font-mono font-bold bg-white/[0.06] text-white/30 flex items-center justify-center border border-white/[0.08]"
+                        >
+                          {key}
+                        </kbd>
+                      ))}
+                    </div>
+                    <span className="text-white/20 text-xs font-medium">
+                      navegar
+                    </span>
+                    <div className="w-px h-4 bg-white/10" />
+                    <kbd className="px-3 h-6 rounded-md text-[10px] font-mono font-bold bg-white/[0.06] text-white/30 flex items-center justify-center border border-white/[0.08]">
+                      Enter
+                    </kbd>
+                    <span className="text-white/20 text-xs font-medium">
+                      abrir
+                    </span>
+                  </div>
+
+                  {/* Tagline */}
+                  <p className="text-white/[0.08] text-[10px] font-mono tracking-widest uppercase mt-8">
+                    Frontend · Mobile · Design
+                  </p>
                 </div>
 
-                {/* DetailPanel - Overlay Layer (conditional) */}
+                {/* DetailPanel — absolute overlay, covers the full screen */}
                 {(selectedDetail || isClosing) && (
                   <DetailPanel
                     item={selectedDetail!}

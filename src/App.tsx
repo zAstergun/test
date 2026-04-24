@@ -810,7 +810,7 @@ export default function App() {
           {/* Bottom brand */}
           <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-center z-10 select-none">
             <p className="text-white/[0.06] text-[10px] font-mono tracking-widest uppercase">
-              One Person Business · Portfolio
+              Portfolio
             </p>
           </div>
         </div>

@@ -205,18 +205,27 @@ function DetailPanel({
   item,
   onClose,
   isDesktop,
+  isClosing,
+  onAnimationEnd,
 }: {
   item: DetailableItem;
   onClose: () => void;
   isDesktop: boolean;
+  isClosing?: boolean;
+  onAnimationEnd?: () => void;
 }) {
-  // On desktop this renders inside the iPad screen, on mobile as overlay
+  const animClass = isClosing ? "animate-ipadAppClose" : "animate-ipadAppOpen";
+
   const containerClass = isDesktop
-    ? "detail-panel-desktop absolute inset-0 z-20 flex flex-col bg-aster-beige overflow-hidden"
-    : "detail-panel absolute inset-0 z-30 bg-aster-beige flex flex-col";
+    ? `detail-panel-desktop absolute inset-0 z-20 flex flex-col bg-aster-beige overflow-hidden ${animClass}`
+    : `detail-panel absolute inset-0 z-30 bg-aster-beige flex flex-col ${animClass}`;
 
   return (
-    <div className={containerClass} key={item.id}>
+    <div
+      className={containerClass}
+      key={item.id}
+      onAnimationEnd={onAnimationEnd}
+    >
       {/* Header */}
       <div
         className={`relative flex items-end ${
@@ -458,6 +467,7 @@ export default function App() {
   const [selectedDetail, setSelectedDetail] = useState<DetailableItem | null>(
     null
   );
+  const [isClosing, setIsClosing] = useState(false);
   const [openFolder, setOpenFolder] = useState<FolderItem | null>(null);
   const time = useClockTime();
   const isDesktop = useIsDesktop();
@@ -478,7 +488,7 @@ export default function App() {
 
   const goHome = useCallback(() => {
     setOpenFolder(null);
-    setSelectedDetail(null);
+    setIsClosing(true);
     setFocusedIndex(0);
   }, []);
 
@@ -488,7 +498,7 @@ export default function App() {
   }, []);
 
   const closeDetail = useCallback(() => {
-    setSelectedDetail(null);
+    setIsClosing(true);
   }, []);
 
   const activateItem = useCallback(
@@ -502,14 +512,18 @@ export default function App() {
       if (isFolder(item)) {
         setOpenFolder(item);
         setSelectedDetail(null);
-        setFocusedIndex(0); // Reset focus for the new grid
+        setFocusedIndex(0);
         return;
       }
       if (isDetailable(item)) {
-        // Toggle: if already selected, deselect (close detail)
-        setSelectedDetail((prev) =>
-          prev && prev.id === item.id ? null : item
-        );
+        // Toggle with animation: if already open, trigger close animation
+        setSelectedDetail((prev) => {
+          if (prev && prev.id === item.id) {
+            setIsClosing(true);
+            return prev; // keep prev so DetailPanel stays mounted during animation
+          }
+          return item;
+        });
       }
     },
     []
@@ -650,11 +664,17 @@ export default function App() {
       )}
 
       {/* Detail Panel as overlay (MOBILE ONLY) */}
-      {selectedDetail && !isDesktop && (
+      {(selectedDetail || isClosing) && !isDesktop && (
         <DetailPanel
-          item={selectedDetail}
+          item={selectedDetail!}
           onClose={closeDetail}
           isDesktop={false}
+          isClosing={isClosing}
+          onAnimationEnd={
+            isClosing
+              ? () => { setSelectedDetail(null); setIsClosing(false); }
+              : undefined
+          }
         />
       )}
     </>
@@ -772,11 +792,17 @@ export default function App() {
                 </div>
 
                 {/* DetailPanel - Overlay Layer (conditional) */}
-                {selectedDetail && (
+                {(selectedDetail || isClosing) && (
                   <DetailPanel
-                    item={selectedDetail}
+                    item={selectedDetail!}
                     onClose={closeDetail}
                     isDesktop
+                    isClosing={isClosing}
+                    onAnimationEnd={
+                      isClosing
+                        ? () => { setSelectedDetail(null); setIsClosing(false); }
+                        : undefined
+                    }
                   />
                 )}
               </div>

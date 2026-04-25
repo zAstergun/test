@@ -21,6 +21,7 @@ export interface LinkItem {
   icon: string;
   gradient: [string, string];
   url: string;
+  bgImage?: string;
 }
 
 /** A folder that contains child projects or links */
@@ -47,8 +48,9 @@ export interface ProjectItem {
 }
 
 export interface AsterLink {
-  name: string;
+  title: string;
   url: string;
+  icon?: string;
 }
 
 /** Union of every grid-renderable item */
@@ -98,13 +100,15 @@ export const HOME_ITEMS: GridItem[] = [
     icon: "👤",
     gradient: ["#6c63ff", "#a29bfe"],
     summary:
-      "Desenvolvedor Frontend & Mobile com foco em React, React Native e TypeScript. Apaixonado por interfaces limpas, performance e experiências de utilizador memoráveis.",
+      "Sou o Douglas, Desenvolvedor Frontend focado em criar interfaces performáticas e arquiteturas limpas. Atualmente no 5º semestre de Ciência da Computação no Centro Universitário União das Américas - UniAmérica, divido meu tempo entre o código e a liderança de uma comunidade técnica acadêmica, onde orquestro projetos colaborativos e auxilio no nivelamento de outros estudantes.\n\n" +
+      "Meu interesse por programação não começou na teoria, mas dissecando sistemas na prática. A porta de entrada foi a configuração de servidores de jogos online e a engenharia reversa para a criação de cheats. Essa exploração me forçou a entender desde cedo como a memória de uma máquina funciona, como interceptar fluxos de dados e como a lógica de um sistema opera em baixo nível. Hoje, canalizo essa mesma curiosidade analítica para construir aplicações web seguras e robustas.\n\n" +
+      "Fora dos repositórios, mantenho a mente afiada estudando Mandarim e analisando cenários competitivos de e-sports. Para sustentar esse nível de exigência técnica, aplico uma disciplina inegociável na vida real: treino intensamente com a meta de completar um triathlon Ironman. É essa combinação de consistência, resolução de problemas complexos e execução pragmática que entrego na engenharia de software.",
     links: [
-      { name: "LinkedIn", url: "#" },
-      { name: "Email", url: "mailto:contact@aster.dev" },
+      { title: "LinkedIn", url: "#", icon: "linkedin" },
+      { title: "GitHub", url: "https://github.com/zAstergun", icon: "github" },
+      { title: "Email", url: "mailto:contact@aster.dev", icon: "mail" },
     ],
     tags: ["Frontend", "Mobile", "UI/UX"],
-    previewMedia: "/previews/sobre-mim.gif",
   },
   {
     type: "folder",
@@ -149,12 +153,32 @@ export const HOME_ITEMS: GridItem[] = [
 
   // ─── Row 2: Currículo · GitHub · Tradução ───
   {
-    type: "link",
-    id: "cv",
+    type: "app",
+    id: "curriculo",
     name: "Currículo",
     icon: "📄",
     gradient: ["#fd79a8", "#e84393"],
-    url: "#cv",
+    summary:
+      "--- RESUMO PROFISSIONAL ---\n" +
+      "Desenvolvedor Frontend focado em performance, escalabilidade e arquitetura de sistemas. Atualmente no 5º semestre de Ciência da Computação, com experiência prática na liderança de comunidades técnicas e gestão de projetos colaborativos.\n\n" +
+      "--- FORMAÇÃO E COMUNIDADE ---\n" +
+      "Ciência da Computação – UniAmérica (5º Semestre).\n" +
+      "Liderança Técnica: Fundador de comunidade acadêmica com foco em mentoria e governança de projetos no GitHub.\n\n" +
+      "--- STACK TÉCNICA ---\n" +
+      "Frontend: React.js, Next.js, Vue.js, Astro, JavaScript (ES6+), Tailwind CSS, Bootstrap.\n" +
+      "Back & Infra: Node.js, SQL, Vercel, Cloudflare, Git/GitHub.\n" +
+      "Mobile & Outros: Flutter, Dart, C++.\n" +
+      "Produtividade: Notion, Obsidian.\n\n" +
+      "--- DIFERENCIAIS ---\n" +
+      "Organização e Fluxo: Especialista em estruturação de fluxos de trabalho e documentação utilizando Notion e Obsidian (PKM).\n" +
+      "Idiomas: Inglês Avançado; Mandarim e Japonês (Em aprendizado).",
+    links: [
+      { title: "Download [PDF]", url: "/Currículo_Douglas_Frontend.pdf", icon: "file-pdf" },
+      { title: "Download [DOCX]", url: "/Currículo_Douglas_Frontend.docx", icon: "file-word" },
+      { title: "Download [Markdown]", url: "/Currículo_Douglas_Frontend.md", icon: "file-text" },
+      { title: "Download [JSON]", url: "/Currículo_Douglas_Frontend.json", icon: "file-code" },
+    ],
+    tags: ["Frontend", "CV", "Douglas"],
   },
   {
     type: "app",
@@ -163,9 +187,23 @@ export const HOME_ITEMS: GridItem[] = [
     icon: "/icons/octocat.svg",
     gradient: ["#2d3436", "#636e72"],
     summary:
-      "Perfil ativo com projetos open-source que demonstram código limpo, arquitetura bem definida e evolução contínua. De calculadoras estatísticas com dados reais do IBGE a wikis acadêmicas completas — cada repositório reflete boas práticas, separação de responsabilidades e atenção ao detalhe.",
+      "Este é o meu Hub de Engenharia e Colaboração. Mais do que um repositório de arquivos, este espaço centraliza minha atuação em diferentes ecossistemas técnicos, onde aplico padrões de arquitetura e liderança de projetos.\n\n" +
+      "--- 👤 PERFIL PESSOAL ---\n" +
+      "Foco em experimentação de novas stacks (React, Astro, Tailwind), ferramentas utilitárias e o desenvolvimento core deste portfólio.\n\n" +
+      "--- 🏢 ORGANIZAÇÕES E COMUNIDADES ---\n" +
+      "• Centro Universitário União das Américas - UniAmérica (Liderança Técnica): Atuo na coordenação dos repositórios de projetos de extensão (PEX). Minha missão é garantir a padronização das Wikis de documentação, revisar Pull Requests e mentorar outros estudantes na organização do código.\n" +
+      "• [Nome de Outra Org]: Espaço reservado para futuras parcerias e contribuições em projetos Open Source.",
     links: [
-      { name: "Ver Perfil no GitHub", url: "https://github.com/zAstergun" },
+      {
+        title: "Meu GitHub Principal",
+        url: "https://github.com/zastergun",
+        icon: "github",
+      },
+      {
+        title: "Org. Projetos Acadêmicos",
+        url: "https://github.com/Descomplica-TI",
+        icon: "users",
+      },
     ],
     tags: ["Open Source", "Código Limpo", "Boas Práticas"],
   },
@@ -178,51 +216,30 @@ export const HOME_ITEMS: GridItem[] = [
     children: [
       {
         type: "link",
+        id: "lang-br",
+        name: "Português (BR)",
+        icon: "🇧🇷",
+        url: "#br",
+        gradient: ["#009c3b", "#ffdf00"],
+        bgImage: "https://flagcdn.com/w160/br.png"
+      },
+      {
+        type: "link",
+        id: "lang-pt",
+        name: "Português",
+        icon: "🇵🇹",
+        url: "#pt",
+        gradient: ["#009c3b", "#ffdf00"],
+        bgImage: "https://flagcdn.com/w160/pt.png"
+      },
+      {
+        type: "link",
         id: "lang-en",
         name: "English",
-        icon: "🇺🇸",
+        icon: "🇬🇧",
         url: "#en",
-        gradient: ["#e2e2e2", "#c9d6ff"],
-      },
-      {
-        type: "link",
-        id: "lang-zh",
-        name: "中文",
-        icon: "🇨🇳",
-        url: "#zh",
-        gradient: ["#ff0844", "#ffb199"],
-      },
-      {
-        type: "link",
-        id: "lang-ko",
-        name: "한국어",
-        icon: "🇰🇷",
-        url: "#ko",
-        gradient: ["#e2e2e2", "#c9d6ff"],
-      },
-      {
-        type: "link",
-        id: "lang-vi",
-        name: "Tiếng Việt",
-        icon: "🇻🇳",
-        url: "#vi",
-        gradient: ["#ff0844", "#ffb199"],
-      },
-      {
-        type: "link",
-        id: "lang-id",
-        name: "Bahasa",
-        icon: "🇮🇩",
-        url: "#id",
-        gradient: ["#ff0844", "#e2e2e2"],
-      },
-      {
-        type: "link",
-        id: "lang-ja",
-        name: "日本語",
-        icon: "🇯🇵",
-        url: "#ja",
-        gradient: ["#e2e2e2", "#ff0844"],
+        gradient: ["#002868", "#bf0a30"],
+        bgImage: "https://flagcdn.com/w160/gb.png"
       },
       {
         type: "link",
@@ -230,7 +247,53 @@ export const HOME_ITEMS: GridItem[] = [
         name: "Español",
         icon: "🇪🇸",
         url: "#es",
-        gradient: ["#f6d365", "#fda085"],
+        gradient: ["#aa151b", "#f1bf00"],
+        bgImage: "https://flagcdn.com/w160/es.png"
+      },
+      {
+        type: "link",
+        id: "lang-ja",
+        name: "日本語",
+        icon: "🇯🇵",
+        url: "#ja",
+        gradient: ["#ffffff", "#bc002d"],
+        bgImage: "https://flagcdn.com/w160/jp.png"
+      },
+      {
+        type: "link",
+        id: "lang-zh",
+        name: "中文",
+        icon: "🇨🇳",
+        url: "#zh",
+        gradient: ["#ee1c25", "#ffff00"],
+        bgImage: "https://flagcdn.com/w160/cn.png"
+      },
+      {
+        type: "link",
+        id: "lang-ko",
+        name: "한국어",
+        icon: "🇰🇷",
+        url: "#ko",
+        gradient: ["#0047a0", "#cd2e3a"],
+        bgImage: "https://flagcdn.com/w160/kr.png"
+      },
+      {
+        type: "link",
+        id: "lang-vi",
+        name: "Tiếng Việt",
+        icon: "🇻🇳",
+        url: "#vi",
+        gradient: ["#da251d", "#ffff00"],
+        bgImage: "https://flagcdn.com/w160/vn.png"
+      },
+      {
+        type: "link",
+        id: "lang-id",
+        name: "Bahasa",
+        icon: "🇮🇩",
+        url: "#id",
+        gradient: ["#ff0000", "#ffffff"],
+        bgImage: "https://flagcdn.com/w160/id.png"
       },
       {
         type: "link",
@@ -238,7 +301,8 @@ export const HOME_ITEMS: GridItem[] = [
         name: "Français",
         icon: "🇫🇷",
         url: "#fr",
-        gradient: ["#e2e2e2", "#c9d6ff"],
+        gradient: ["#002395", "#ed2939"],
+        bgImage: "https://flagcdn.com/w160/fr.png"
       },
       {
         type: "link",
@@ -246,7 +310,8 @@ export const HOME_ITEMS: GridItem[] = [
         name: "Deutsch",
         icon: "🇩🇪",
         url: "#de",
-        gradient: ["#f5af19", "#e2e2e2"],
+        gradient: ["#000000", "#ffce00"],
+        bgImage: "https://flagcdn.com/w160/de.png"
       },
       {
         type: "link",
@@ -254,7 +319,8 @@ export const HOME_ITEMS: GridItem[] = [
         name: "Italiano",
         icon: "🇮🇹",
         url: "#it",
-        gradient: ["#38ef7d", "#e2e2e2"],
+        gradient: ["#009246", "#ce2b37"],
+        bgImage: "https://flagcdn.com/w160/it.png"
       },
       {
         type: "link",
@@ -262,7 +328,8 @@ export const HOME_ITEMS: GridItem[] = [
         name: "Nederlands",
         icon: "🇳🇱",
         url: "#nl",
-        gradient: ["#f6d365", "#fda085"],
+        gradient: ["#ae1c28", "#21468b"],
+        bgImage: "https://flagcdn.com/w160/nl.png"
       },
       {
         type: "link",
@@ -270,7 +337,8 @@ export const HOME_ITEMS: GridItem[] = [
         name: "Русский",
         icon: "🇷🇺",
         url: "#ru",
-        gradient: ["#e2e2e2", "#c9d6ff"],
+        gradient: ["#ffffff", "#d52b1e"],
+        bgImage: "https://flagcdn.com/w160/ru.png"
       },
       {
         type: "link",
@@ -278,7 +346,8 @@ export const HOME_ITEMS: GridItem[] = [
         name: "العربية",
         icon: "🇸🇦",
         url: "#ar",
-        gradient: ["#11998e", "#e2e2e2"],
+        gradient: ["#006c35", "#ffffff"],
+        bgImage: "https://flagcdn.com/w160/sa.png"
       },
     ],
   },
@@ -300,10 +369,11 @@ export const HOME_ITEMS: GridItem[] = [
         summary:
           "Calculadora estatística interativa que cruza 12 filtros demográficos com microdados oficiais do IBGE (Censo 2022, PNAD 2023) para revelar a probabilidade real de encontrar o parceiro ideal no Brasil. Cálculo em tempo real, card viral compartilhável e auditoria completa de dados.",
         links: [
-          { name: "Abrir App", url: "https://idealcalc.app/" },
+          { title: "Abrir App", url: "https://idealcalc.app/", icon: "external-link" },
           {
-            name: "Código Fonte",
+            title: "Código Fonte",
             url: "https://github.com/zAstergun/Ideal-Calculator",
+            icon: "github",
           },
         ],
         tags: ["JavaScript", "Estatística", "IBGE", "UI/UX"],
@@ -319,12 +389,14 @@ export const HOME_ITEMS: GridItem[] = [
           "Jogo da memória temático inspirado no universo Soul Fighter de League of Legends. Mecânica clássica de card-flip com assets oficiais do evento, lógica de matching em JavaScript vanilla e design responsivo fiel à identidade visual do game.",
         links: [
           {
-            name: "Jogar Agora",
+            title: "Jogar Agora",
             url: "https://zastergun.github.io/Soul-Fighter-Memory-Game/",
+            icon: "play",
           },
           {
-            name: "Código Fonte",
+            title: "Código Fonte",
             url: "https://github.com/zAstergun/Soul-Fighter-Memory-Game",
+            icon: "github",
           },
         ],
         tags: ["JavaScript", "Game Dev", "CSS", "LoL"],
@@ -337,12 +409,13 @@ export const HOME_ITEMS: GridItem[] = [
         icon: "/icons/pex_wiki.png",
         gradient: ["#5865F2", "#7289DA"],
         summary:
-          "Hub de conhecimento acadêmico para alunos de Ciência da Computação da Descomplica. Sistema de Views com roteamento SPA em Vanilla JS, design system 'Blurple Gamer' em dark mode, checklists interativos, modais dinâmicos para os 17 ODS da ONU e responsividade Mobile First.",
+          "Hub de conhecimento acadêmico para alunos de Ciência da Computação do Centro Universitário União das Américas - UniAmérica. Sistema de Views com roteamento SPA em Vanilla JS, design system 'Blurple Gamer' em dark mode, checklists interativos, modais dinâmicos para os 17 ODS da ONU e responsividade Mobile First.",
         links: [
-          { name: "Visitar Wiki", url: "https://pex-wiki.vercel.app/" },
+          { title: "Visitar Wiki", url: "https://pex-wiki.vercel.app/", icon: "external-link" },
           {
-            name: "Código Fonte",
+            title: "Código Fonte",
             url: "https://github.com/Descomplica-TI/Pex-Wiki",
+            icon: "github",
           },
         ],
         tags: ["Vanilla JS", "SPA", "Dark Mode", "Educação"],
@@ -375,7 +448,7 @@ export const HOME_ITEMS: GridItem[] = [
         gradient: ["#e17055", "#fab1a0"],
         summary:
           "Aplicação mobile de demonstração construída com React Native. Arquitetura limpa, navegação fluida e design system customizado.",
-        links: [{ name: "Ver Demo", url: "#" }],
+        links: [{ title: "Ver Demo", url: "#", icon: "play" }],
         tags: ["React Native", "Expo", "Mobile"],
         previewMedia: "/previews/app-demo.gif",
       },

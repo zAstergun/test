@@ -144,7 +144,13 @@ function GridIcon({
           background: `linear-gradient(135deg, ${item.gradient[0]}, ${item.gradient[1]})`,
         }}
       >
-        {isImageIcon(item.icon) ? (
+        {item.type === "link" && item.bgImage ? (
+          <img
+            src={item.bgImage}
+            alt={item.name}
+            className="w-full h-full object-cover rounded-2xl drop-shadow-sm"
+          />
+        ) : isImageIcon(item.icon) ? (
           <img
             src={item.icon}
             alt={item.name}
@@ -320,13 +326,80 @@ function DetailPanel({
           ))}
         </div>
 
+        {/* Links Section (Top) */}
+        {item.links.length > 0 && (
+          <>
+            <h3
+              className={`text-xs font-bold uppercase tracking-widest mb-4 transition-colors duration-500 ${panelFaint} ${
+                isDesktop ? "mt-2" : "mt-0"
+              }`}
+            >
+              Links
+            </h3>
+            <div
+              className={`grid gap-3 mb-10 ${
+                isDesktop ? "grid-cols-2 max-w-2xl" : "grid-cols-1"
+              }`}
+            >
+              {item.links.map((link) => {
+                const getEmoji = (icon?: string) => {
+                  const map: Record<string, string> = {
+                    github: "🐙",
+                    linkedin: "🔗",
+                    mail: "✉️",
+                    "file-pdf": "📕",
+                    "file-word": "📘",
+                    "file-text": "📄",
+                    "file-code": "💻",
+                    users: "👥",
+                    "external-link": "🌐",
+                    play: "▶️",
+                  };
+                  return map[icon || ""] || "🔗";
+                };
+
+                return (
+                  <a
+                    key={link.title}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center gap-3 px-5 py-3.5 rounded-xl border transition-colors duration-500 group ${
+                      isDark
+                        ? "bg-stone-700/60 border-stone-600 hover:bg-stone-700"
+                        : "bg-aster-beige-dark/60 border-aster-dark/[0.08] hover:bg-aster-beige-dark"
+                    }`}
+                  >
+                    <span className="text-base">{getEmoji(link.icon)}</span>
+                    <span
+                      className={`text-sm font-medium group-hover:text-aster-accent transition-colors duration-500 ${
+                        isDark ? "text-stone-300" : "text-aster-dark/80"
+                      }`}
+                    >
+                      {link.title}
+                    </span>
+                    <span
+                      className={`ml-auto group-hover:text-aster-accent transition-colors duration-500 text-xs ${
+                        isDark ? "text-stone-600" : "text-aster-dark/30"
+                      }`}
+                    >
+                      →
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {/* Resumo Section */}
         <h3 className={`text-xs font-bold uppercase tracking-widest mb-3 transition-colors duration-500 ${panelFaint}`}>
-          Sobre
+          Resumo
         </h3>
         <p
-          className={`leading-relaxed text-justify transition-colors duration-500 ${isDark ? 'text-stone-300' : 'text-aster-dark/80'} ${
+          className={`leading-relaxed transition-colors duration-500 ${isDark ? 'text-stone-300' : 'text-aster-dark/80'} ${
             isDesktop ? "text-base mb-0" : "text-sm mb-8"
-          }`}
+          } whitespace-pre-wrap`}
         >
           {item.summary}
         </p>
@@ -345,37 +418,6 @@ function DetailPanel({
             />
           </>
         )}
-
-        <h3
-          className={`text-xs font-bold uppercase tracking-widest mb-4 transition-colors duration-500 ${panelFaint} ${
-            isDesktop ? "mt-10" : "mt-2"
-          }`}
-        >
-          Links
-        </h3>
-        <div
-          className={`flex flex-col gap-2.5 ${
-            isDesktop ? "max-w-lg" : ""
-          }`}
-        >
-          {item.links.map((link) => (
-            <a
-              key={link.name}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex items-center gap-3 px-5 py-3.5 rounded-xl border transition-colors duration-500 group ${isDark ? 'bg-stone-700/60 border-stone-600 hover:bg-stone-700' : 'bg-aster-beige-dark/60 border-aster-dark/[0.08] hover:bg-aster-beige-dark'}`}
-            >
-              <span className="text-base">🔗</span>
-              <span className={`text-sm font-medium group-hover:text-aster-accent transition-colors duration-500 ${isDark ? 'text-stone-300' : 'text-aster-dark/80'}`}>
-                {link.name}
-              </span>
-              <span className={`ml-auto group-hover:text-aster-accent transition-colors duration-500 text-xs ${isDark ? 'text-stone-600' : 'text-aster-dark/30'}`}>
-                →
-              </span>
-            </a>
-          ))}
-        </div>
 
         {/* Preview Visual — mobile */}
         {!isDesktop && item.previewMedia && (

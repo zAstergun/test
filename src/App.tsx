@@ -840,7 +840,7 @@ export default function App() {
   // ─── Render ────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen w-full bg-aster-dark relative overflow-hidden">
+    <div className={`min-h-screen w-full relative overflow-hidden transition-colors duration-500 ${isDark ? 'bg-aster-dark' : 'bg-aster-beige'}`}>
       <SplashScreen isBooting={isBooting} />
 
       {/* Ambient glows (desktop only) */}
@@ -895,7 +895,7 @@ export default function App() {
           {/* Detail Panel (right) — iPad shell frame */}
           <div className="flex-1 max-w-[1400px] h-[750px] relative z-10">
             <div className="ipad-shell w-full h-full">
-              <div className="ipad-screen relative overflow-hidden bg-gradient-to-br from-aster-dark-lighter/90 to-aster-dark-lighter/60">
+              <div className={`ipad-screen relative overflow-hidden transition-colors duration-500 ${isDark ? 'bg-stone-900' : 'bg-aster-beige'}`}>
                 {/* Empty State — wallpaper, fills 100% */}
                 <div className="h-full w-full flex flex-col items-center justify-center relative overflow-hidden">
                   {/* Decorative ambient circles */}
@@ -911,40 +911,40 @@ export default function App() {
                   </div>
 
                   {/* Welcome copy */}
-                  <h2 className="text-2xl font-bold tracking-tight mb-2 transition-colors duration-500 text-white/80">
+                  <h2 className={`text-2xl font-bold tracking-tight mb-2 transition-colors duration-500 ${isDark ? 'text-white/80' : 'text-aster-dark'}`}>
                     Bem-vindo ao <span className="text-aster-accent">AsterDev</span>
                   </h2>
-                  <p className="text-sm font-medium max-w-sm text-center leading-relaxed mb-6 transition-colors duration-500 text-white/30">
+                  <p className={`text-sm font-medium max-w-sm text-center leading-relaxed mb-6 transition-colors duration-500 ${isDark ? 'text-white/30' : 'text-aster-dark/60'}`}>
                     Explora o portfólio navegando pelos apps no telemóvel.
                     Cada projeto abre aqui com todos os detalhes.
                   </p>
 
                   {/* Interaction hint */}
-                  <div className="flex items-center gap-4 px-5 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+                  <div className={`flex items-center gap-4 px-5 py-3 rounded-2xl border transition-colors duration-500 ${isDark ? 'bg-white/[0.03] border-white/[0.06]' : 'bg-aster-dark/[0.03] border-aster-dark/[0.06]'}`}>
                     <div className="flex gap-1">
                       {["W", "A", "S", "D"].map((key) => (
                         <kbd
                           key={key}
-                          className="w-6 h-6 rounded-md text-[10px] font-mono font-bold flex items-center justify-center border transition-colors duration-500 bg-white/[0.06] text-white/30 border-white/[0.08]"
+                          className={`w-6 h-6 rounded-md text-[10px] font-mono font-bold flex items-center justify-center border transition-colors duration-500 ${isDark ? 'bg-white/[0.06] text-white/30 border-white/[0.08]' : 'bg-aster-dark/[0.05] text-aster-dark/40 border-aster-dark/10'}`}
                         >
                           {key}
                         </kbd>
                       ))}
                     </div>
-                    <span className="text-xs font-medium transition-colors duration-500 text-white/20">
+                    <span className={`text-xs font-medium transition-colors duration-500 ${isDark ? 'text-white/20' : 'text-aster-dark/40'}`}>
                       navegar
                     </span>
-                    <div className="w-px h-4 bg-white/10" />
-                    <kbd className="px-3 h-6 rounded-md text-[10px] font-mono font-bold flex items-center justify-center border transition-colors duration-500 bg-white/[0.06] text-white/30 border-white/[0.08]">
+                    <div className={`w-px h-4 transition-colors duration-500 ${isDark ? 'bg-white/10' : 'bg-aster-dark/10'}`} />
+                    <kbd className={`px-3 h-6 rounded-md text-[10px] font-mono font-bold flex items-center justify-center border transition-colors duration-500 ${isDark ? 'bg-white/[0.06] text-white/30 border-white/[0.08]' : 'bg-aster-dark/[0.05] text-aster-dark/40 border-aster-dark/10'}`}>
                       Enter
                     </kbd>
-                    <span className="text-xs font-medium transition-colors duration-500 text-white/20">
+                    <span className={`text-xs font-medium transition-colors duration-500 ${isDark ? 'text-white/20' : 'text-aster-dark/40'}`}>
                       abrir
                     </span>
                   </div>
 
                   {/* Tagline */}
-                  <p className="text-[10px] font-mono tracking-widest uppercase mt-8 transition-colors duration-500 text-white/[0.08]">
+                  <p className={`text-[10px] font-mono tracking-widest uppercase mt-8 transition-colors duration-500 ${isDark ? 'text-white/[0.08]' : 'text-aster-dark/20'}`}>
                     Frontend · Mobile · Design
                   </p>
                 </div>

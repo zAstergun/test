@@ -473,6 +473,9 @@ function SplashScreen({ isBooting }: { isBooting: boolean }) {
     >
       <span className="text-5xl text-aster-dark select-none mb-6">✦</span>
       <div className="w-5 h-5 border-[3px] border-aster-dark/20 border-t-aster-dark rounded-full animate-spin" />
+      <p className="text-[10px] font-mono tracking-[0.2em] text-aster-dark/40 uppercase mt-6 animate-pulse">
+        [ ASTER_OS BOOT ]
+      </p>
     </div>
   );
 }

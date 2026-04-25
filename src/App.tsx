@@ -121,6 +121,8 @@ function GridIcon({
           ? `Abrir ${item.name}`
           : `Ver ${item.name}`
       }
+      aria-haspopup={isFolder_ ? "true" : undefined}
+      aria-expanded={isFolder_ ? "false" : undefined}
     >
       {/* Focus ring — asymmetric inset to balance the 5px cel-shading shadow */}
       {isFocused && (
@@ -456,6 +458,19 @@ function KeyHint({ isDesktop, isDark }: { isDesktop: boolean; isDark: boolean })
   );
 }
 
+function SplashScreen({ isBooting }: { isBooting: boolean }) {
+  return (
+    <div
+      className={`fixed inset-0 z-50 bg-aster-beige flex flex-col items-center justify-center transition-opacity duration-1000 ${
+        isBooting ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      <span className="text-5xl text-aster-dark select-none mb-6">✦</span>
+      <div className="w-5 h-5 border-[3px] border-aster-dark/20 border-t-aster-dark rounded-full animate-spin" />
+    </div>
+  );
+}
+
 function FolderHeader({
   folder,
   onBack,
@@ -498,7 +513,16 @@ function FolderHeader({
 // ─── Main App ────────────────────────────────────────────────
 
 export default function App() {
+  const [isBooting, setIsBooting] = useState(true);
   const [focusedIndex, setFocusedIndex] = useState(0);
+
+  // ─── Boot Experience ────────────────────────────────────────
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsBooting(false);
+    }, 1800);
+    return () => clearTimeout(timer);
+  }, []);
   const [selectedDetail, setSelectedDetail] = useState<DetailableItem | null>(
     null
   );
@@ -513,6 +537,47 @@ export default function App() {
   const bg = isDark ? 'bg-stone-900' : 'bg-aster-beige';
   const text = isDark ? 'text-stone-100' : 'text-aster-dark';
   const textFaint = isDark ? 'text-stone-500' : 'text-aster-dark/40';
+
+  // ─── Deep Linking ──────────────────────────────────────────
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const appId = params.get("app");
+
+    if (appId) {
+      let foundItem: DetailableItem | null = null;
+      let parentFolder: FolderItem | null = null;
+      let foundIndex = 0;
+
+      for (let i = 0; i < HOME_ITEMS.length; i++) {
+        const item = HOME_ITEMS[i];
+        if (item.id === appId && isDetailable(item)) {
+          foundItem = item;
+          foundIndex = i;
+          break;
+        }
+        if (isFolder(item)) {
+          const childIndex = item.children.findIndex((c) => c.id === appId);
+          if (childIndex !== -1) {
+            const child = item.children[childIndex];
+            if (isDetailable(child)) {
+              foundItem = child as DetailableItem;
+              parentFolder = item;
+              foundIndex = childIndex;
+              break;
+            }
+          }
+        }
+      }
+
+      if (foundItem) {
+        if (parentFolder) {
+          setOpenFolder(parentFolder);
+        }
+        setFocusedIndex(foundIndex);
+        setSelectedDetail(foundItem);
+      }
+    }
+  }, []);
 
   // ─── Media Preload ─────────────────────────────────────────
   useEffect(() => {
@@ -554,6 +619,8 @@ export default function App() {
 
   const closeDetail = useCallback(() => {
     setIsClosing(true);
+    // Limpa o parâmetro da URL silenciosamente sem recarregar a página
+    window.history.replaceState({}, '', window.location.pathname);
   }, []);
 
   const activateItem = useCallback(
@@ -776,6 +843,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen w-full bg-aster-dark relative overflow-hidden">
+      <SplashScreen isBooting={isBooting} />
+
       {/* Ambient glows (desktop only) */}
       {isDesktop && (
         <>

@@ -652,8 +652,10 @@ export default function App() {
         setSelectedDetail((prev) => {
           if (prev && prev.id === item.id) {
             setIsClosing(true);
+            window.history.replaceState({}, '', window.location.pathname);
             return prev; // keep prev so DetailPanel stays mounted during animation
           }
+          window.history.replaceState({}, '', `${window.location.pathname}?app=${item.id}`);
           return item;
         });
       }

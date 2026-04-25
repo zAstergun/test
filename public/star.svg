@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="starGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a29bfe"/>
+      <stop offset="50%" stop-color="#6c63ff"/>
+      <stop offset="100%" stop-color="#4834d4"/>
+    </linearGradient>
+  </defs>
+  <!-- Four-pointed star ✦ — clean standalone SVG -->
+  <path
+    d="M100 8 L118 82 L192 100 L118 118 L100 192 L82 118 L8 100 L82 82 Z"
+    fill="url(#starGradient)"
+  />
+</svg>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Dark background gradient -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#292524"/>
+      <stop offset="100%" stop-color="#1c1917"/>
+    </linearGradient>
+    <!-- Star gradient - accent colors -->
+    <linearGradient id="starGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a29bfe"/>
+      <stop offset="50%" stop-color="#6c63ff"/>
+      <stop offset="100%" stop-color="#4834d4"/>
+    </linearGradient>
+    <!-- Ambient glow -->
+    <radialGradient id="glow" cx="50%" cy="50%" r="35%">
+      <stop offset="0%" stop-color="#6c63ff" stop-opacity="0.3"/>
+      <stop offset="70%" stop-color="#6c63ff" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#6c63ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Secondary teal glow (brand) -->
+    <radialGradient id="glowTeal" cx="65%" cy="70%" r="30%">
+      <stop offset="0%" stop-color="#00cec9" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#00cec9" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="roundRect">
+      <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#roundRect)">
+    <!-- Background -->
+    <rect width="512" height="512" fill="url(#bg)"/>
+
+    <!-- Ambient glows -->
+    <circle cx="256" cy="256" r="240" fill="url(#glow)"/>
+    <circle cx="310" cy="320" r="180" fill="url(#glowTeal)"/>
+
+    <!-- Four-pointed star ✦ — slightly more stylized -->
+    <path d="M256 52 L290 218 L456 256 L290 294 L256 460 L222 294 L56 256 L222 218 Z" fill="url(#starGrad)"/>
+
+    <!-- Star inner shine -->
+    <path d="M256 52 L290 218 L456 256 L290 294 L256 460 L222 294 L56 256 L222 218 Z" fill="white" opacity="0.1"/>
+
+    <!-- Small pulse dot (top-right, brand indicator) -->
+    <circle cx="380" cy="132" r="12" fill="#6c63ff" opacity="0.6"/>
+    <circle cx="380" cy="132" r="6" fill="#a29bfe" opacity="0.9"/>
+
+    <!-- Subtle frame border -->
+    <rect x="1" y="1" width="510" height="510" rx="111" ry="111" fill="none" stroke="white" stroke-opacity="0.06" stroke-width="2"/>
+  </g>
+</svg>

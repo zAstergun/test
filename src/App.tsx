@@ -110,7 +110,13 @@ function GridIcon({
     <button
       type="button"
       onClick={onClick}
-      onMouseEnter={onHover}
+      onMouseEnter={() => {
+        onHover();
+        if ('previewMedia' in item && item.previewMedia) {
+          const img = new Image();
+          img.src = item.previewMedia as string;
+        }
+      }}
       className={`app-icon relative flex flex-col items-center gap-2 p-2 rounded-2xl transition-all duration-200 cursor-pointer ${
         isFocused ? "focused" : ""
       }`}
@@ -579,19 +585,6 @@ export default function App() {
     }
   }, []);
 
-  // ─── Media Preload ─────────────────────────────────────────
-  useEffect(() => {
-    HOME_ITEMS.forEach(folder => {
-      if (folder.type === 'folder') {
-        folder.children.forEach(item => {
-          if (item.type === 'project' && item.previewMedia) {
-            const img = new Image();
-            img.src = item.previewMedia;
-          }
-        });
-      }
-    });
-  }, []);
 
   /** Items currently visible in the phone grid */
   const currentItems: GridItem[] = useMemo(

@@ -143,7 +143,7 @@ function GridIcon({
 
       {/* Label */}
       <span
-        className={`text-[11px] font-medium leading-tight text-center max-w-[72px] truncate transition-colors duration-200 ${
+        className={`text-[11px] font-medium leading-tight text-center max-w-[72px] truncate transition-colors duration-500 ${
           isFocused
             ? (isDark ? "text-zinc-100 font-semibold" : "text-aster-dark font-semibold")
             : (isDark ? "text-zinc-400" : "text-aster-dark/70")
@@ -251,7 +251,7 @@ function DetailPanel({
           <button
             type="button"
             onClick={onClose}
-            className={`mb-6 w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-aster-dark/10 text-aster-dark/60 hover:bg-aster-dark/20'}`}
+            className={`mb-6 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-500 cursor-pointer ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-aster-dark/10 text-aster-dark/60 hover:bg-aster-dark/20'}`}
             aria-label="Voltar"
           >
             ←
@@ -292,7 +292,7 @@ function DetailPanel({
           {item.tags.map((tag) => (
             <span
               key={tag}
-              className={`tag-chip ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-aster-dark/[0.07] text-aster-dark/60'}`}
+              className={`tag-chip transition-colors duration-500 ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-aster-dark/[0.07] text-aster-dark/60'}`}
             >
               {tag}
             </span>
@@ -343,13 +343,13 @@ function DetailPanel({
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex items-center gap-3 px-5 py-3.5 rounded-xl border transition-all duration-200 group ${isDark ? 'bg-zinc-800/60 border-zinc-700 hover:bg-zinc-800 hover:shadow-cel-sm' : 'bg-aster-beige-dark/60 border-aster-dark/[0.08] hover:bg-aster-beige-dark hover:shadow-cel-sm'}`}
+              className={`flex items-center gap-3 px-5 py-3.5 rounded-xl border transition-colors duration-500 group ${isDark ? 'bg-zinc-800/60 border-zinc-700 hover:bg-zinc-800' : 'bg-aster-beige-dark/60 border-aster-dark/[0.08] hover:bg-aster-beige-dark'}`}
             >
               <span className="text-base">🔗</span>
-              <span className={`text-sm font-medium group-hover:text-aster-accent transition-colors ${isDark ? 'text-zinc-300' : 'text-aster-dark/80'}`}>
+              <span className={`text-sm font-medium group-hover:text-aster-accent transition-colors duration-500 ${isDark ? 'text-zinc-300' : 'text-aster-dark/80'}`}>
                 {link.name}
               </span>
-              <span className={`ml-auto group-hover:text-aster-accent transition-colors text-xs ${isDark ? 'text-zinc-600' : 'text-aster-dark/30'}`}>
+              <span className={`ml-auto group-hover:text-aster-accent transition-colors duration-500 text-xs ${isDark ? 'text-zinc-600' : 'text-aster-dark/30'}`}>
                 →
               </span>
             </a>
@@ -375,7 +375,7 @@ function DetailPanel({
       {/* Divisória minimalista (Desktop) */}
       {isDesktop && (
         <div className={`w-full px-12 shrink-0 transition-colors duration-500 ${panelBg}`}>
-          <div className={`w-full h-[1px] ${isDark ? 'bg-zinc-800' : 'bg-aster-dark/[0.08]'}`} />
+          <div className={`w-full h-[1px] transition-colors duration-500 ${isDark ? 'bg-zinc-800' : 'bg-aster-dark/[0.08]'}`} />
         </div>
       )}
 
@@ -385,10 +385,10 @@ function DetailPanel({
           <button
             type="button"
             onClick={onClose}
-            className={`home-btn w-14 h-14 rounded-full shadow-cel-sm flex items-center justify-center cursor-pointer transition-colors ${isDark ? 'bg-zinc-800 border-2 border-zinc-600 hover:bg-zinc-700' : 'bg-aster-beige-dark/90 border-2 border-aster-dark/10 hover:bg-aster-beige-dark'}`}
+            className={`home-btn w-14 h-14 rounded-full shadow-cel-sm flex items-center justify-center cursor-pointer transition-colors duration-500 ${isDark ? 'bg-zinc-800 border-2 border-zinc-600 hover:bg-zinc-700' : 'bg-aster-beige-dark/90 border-2 border-aster-dark/10 hover:bg-aster-beige-dark'}`}
             aria-label="Botão Home — fechar app"
           >
-            <div className={`w-4 h-4 rounded-sm border-2 ${isDark ? 'border-zinc-500' : 'border-aster-dark/40'}`} />
+            <div className={`w-4 h-4 rounded-sm border-2 transition-colors duration-500 ${isDark ? 'border-zinc-500' : 'border-aster-dark/40'}`} />
           </button>
         </div>
       )}
@@ -756,7 +756,7 @@ export default function App() {
 
       {/* ── MOBILE LAYOUT ── */}
       {!isDesktop && (
-        <div className={`w-full min-h-screen flex flex-col relative transition-colors duration-500 ${bg}`}>
+        <div className={`w-full min-h-screen flex flex-col relative transition-colors duration-500 ${isDark ? 'bg-zinc-950' : 'bg-aster-beige'}`}>
           {phoneContent}
           {/* Floating home button — always visible, even over detail panel */}
           <HomeButton
@@ -783,7 +783,7 @@ export default function App() {
 
           {/* Phone (left) */}
           <div className="phone-shell flex-shrink-0 w-[340px] h-[680px] relative z-10">
-            <div className={`phone-screen w-full h-full flex flex-col relative transition-colors duration-500 ${bg}`}>
+            <div className={`phone-screen w-full h-full flex flex-col relative transition-colors duration-500 ${isDark ? 'bg-zinc-950' : 'bg-aster-beige'}`}>
               {phoneContent}
             </div>
           </div>

@@ -800,7 +800,7 @@ export default function App() {
       {/* Bottom bar (desktop only) */}
       {isDesktop && (
         <div className="flex justify-center pb-3 pt-1">
-          <div className="w-28 h-1 rounded-full bg-aster-dark/15" />
+          <div className={`w-28 h-1 rounded-full transition-colors duration-500 ${isDark ? 'bg-white/20' : 'bg-aster-dark/15'}`} />
         </div>
       )}
 
@@ -880,7 +880,7 @@ export default function App() {
         <div className="h-screen w-full flex items-center justify-center gap-10 px-10 py-8 relative z-10">
           {/* Brand watermark */}
           <div className="absolute top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-10 select-none">
-            <span className="text-white/10 text-xs font-mono tracking-[0.3em] uppercase">
+            <span className={`text-xs font-mono tracking-[0.3em] uppercase transition-colors duration-500 ${isDark ? 'text-white/10' : 'text-aster-dark/20'}`}>
               Aster Dev
             </span>
           </div>
@@ -971,7 +971,7 @@ export default function App() {
 
           {/* Bottom brand */}
           <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-center z-10 select-none">
-            <p className="text-white/[0.06] text-[10px] font-mono tracking-widest uppercase">
+            <p className={`text-[10px] font-mono tracking-widest uppercase transition-colors duration-500 ${isDark ? 'text-white/[0.06]' : 'text-aster-dark/20'}`}>
               Portfolio
             </p>
           </div>

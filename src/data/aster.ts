@@ -1,6 +1,6 @@
 // ─── Types ───────────────────────────────────────────────────
 
-export const LANGUAGES = ["br", "en", "es", "ja", "zh", "ko", "vi", "id", "fr", "de", "it", "nl", "ru", "ar", "pt"] as const;
+export const LANGUAGES = ["br", "en", "es", "jp", "cn", "kr", "vn", "id", "fr", "de", "it", "nl", "ru", "ar", "pt"] as const;
 export type Language = typeof LANGUAGES[number];
 
 /** An item that opens a detail panel inside the phone */
@@ -197,7 +197,7 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       tagStat: 'Estadística', tagComp: 'Competición', tagCert: 'Certificación', tagArch: 'Arquitectura', btnSourceCode: 'Código Fuente'
     }
   },
-  ja: {
+  jp: {
     ui: { back: '戻る', summary: '概要', homeButton: 'ホームボタン — アプリを閉じる', navigate: 'ナビゲート', open: '開く', project: 'プロジェクト', projects: 'プロジェクト', booting: '[ ASTER_OS BOOT ]', welcomeTitle: 'ようこそ', welcomeSubtitle: 'モバイルのアプリを操作してポートフォリオを探索してください。各プロジェクトの詳細がここに表示されます。', post: '投稿', posts: '投稿', lang: '言語', langs: '言語', cert: '証明書', certs: '証明書' },
     items: {
       sobreMimName: '私について',
@@ -213,7 +213,7 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       tagStat: '統計学', tagComp: 'コンペティション', tagCert: '認定', tagArch: 'アーキテクチャ', btnSourceCode: 'ソースコード'
     }
   },
-  zh: {
+  cn: {
     ui: { back: '返回', summary: '摘要', homeButton: '主页按钮 — 关闭应用', navigate: '导航', open: '打开', project: '项目', projects: '项目', booting: '[ ASTER_OS BOOT ]', welcomeTitle: '欢迎来到', welcomeSubtitle: '在手机上浏览应用程序来探索作品集。每个项目都会在这里打开并显示所有细节。', post: '帖子', posts: '帖子', lang: '语言', langs: '语言', cert: '证书', certs: '证书' },
     items: {
       sobreMimName: '关于我',
@@ -229,7 +229,7 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       tagStat: '统计学', tagComp: '竞赛', tagCert: '认证', tagArch: '架构', btnSourceCode: '源代码'
     }
   },
-  ko: {
+  kr: {
     ui: { back: '뒤로', summary: '요약', homeButton: '홈 버튼 — 앱 닫기', navigate: '탐색', open: '열기', project: '프로젝트', projects: '프로젝트', booting: '[ ASTER_OS BOOT ]', welcomeTitle: '환영합니다', welcomeSubtitle: '모바일에서 앱을 탐색하여 포트폴리오를 둘러보세요. 각 프로젝트의 전체 세부 정보가 여기에 열립니다.', post: '게시물', posts: '게시물', lang: '언어', langs: '언어', cert: '인증서', certs: '인증서' },
     items: {
       sobreMimName: '내 소개',
@@ -245,7 +245,7 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       tagStat: '통계학', tagComp: '대회', tagCert: '인증', tagArch: '아키텍처', btnSourceCode: '소스 코드'
     }
   },
-  vi: {
+  vn: {
     ui: { back: 'Quay lại', summary: 'Tóm tắt', homeButton: 'Nút Home — đóng ứng dụng', navigate: 'điều hướng', open: 'mở', project: 'dự án', projects: 'dự án', booting: '[ ASTER_OS BOOT ]', welcomeTitle: 'Chào mừng đến với', welcomeSubtitle: 'Khám phá portfolio bằng cách điều hướng qua các ứng dụng trên điện thoại. Mỗi dự án sẽ mở ra ở đây với đầy đủ chi tiết.', post: 'bài viết', posts: 'bài viết', lang: 'ngôn ngữ', langs: 'ngôn ngữ', cert: 'chứng chỉ', certs: 'chứng chỉ' },
     items: {
       sobreMimName: 'Về tôi',
@@ -507,10 +507,10 @@ export function getHomeItems(lang: Language): GridItem[] {
         { type: "link", id: "lang-br", name: "Português (BR)", icon: "🇧🇷", url: "/br/", gradient: ["#009c3b", "#ffdf00"], bgImage: "https://flagcdn.com/w160/br.png" },
         { type: "link", id: "lang-en", name: "English", icon: "🇬🇧", url: "/en/", gradient: ["#002868", "#bf0a30"], bgImage: "https://flagcdn.com/w160/gb.png" },
         { type: "link", id: "lang-es", name: "Español", icon: "🇪🇸", url: "/es/", gradient: ["#aa151b", "#f1bf00"], bgImage: "https://flagcdn.com/w160/es.png" },
-        { type: "link", id: "lang-ja", name: "日本語", icon: "🇯🇵", url: "/ja/", gradient: ["#ffffff", "#bc002d"], bgImage: "https://flagcdn.com/w160/jp.png" },
-        { type: "link", id: "lang-zh", name: "中文", icon: "🇨🇳", url: "/zh/", gradient: ["#ee1c25", "#ffff00"], bgImage: "https://flagcdn.com/w160/cn.png" },
-        { type: "link", id: "lang-ko", name: "한국어", icon: "🇰🇷", url: "/ko/", gradient: ["#0047a0", "#cd2e3a"], bgImage: "https://flagcdn.com/w160/kr.png" },
-        { type: "link", id: "lang-vi", name: "Tiếng Việt", icon: "🇻🇳", url: "/vi/", gradient: ["#da251d", "#ffff00"], bgImage: "https://flagcdn.com/w160/vn.png" },
+        { type: "link", id: "lang-jp", name: "日本語", icon: "🇯🇵", url: "/jp/", gradient: ["#ffffff", "#bc002d"], bgImage: "https://flagcdn.com/w160/jp.png" },
+        { type: "link", id: "lang-cn", name: "中文", icon: "🇨🇳", url: "/cn/", gradient: ["#ee1c25", "#ffff00"], bgImage: "https://flagcdn.com/w160/cn.png" },
+        { type: "link", id: "lang-kr", name: "한국어", icon: "🇰🇷", url: "/kr/", gradient: ["#0047a0", "#cd2e3a"], bgImage: "https://flagcdn.com/w160/kr.png" },
+        { type: "link", id: "lang-vn", name: "Tiếng Việt", icon: "🇻🇳", url: "/vn/", gradient: ["#da251d", "#ffff00"], bgImage: "https://flagcdn.com/w160/vn.png" },
         { type: "link", id: "lang-id", name: "Bahasa", icon: "🇮🇩", url: "/id/", gradient: ["#ff0000", "#ffffff"], bgImage: "https://flagcdn.com/w160/id.png" },
         { type: "link", id: "lang-fr", name: "Français", icon: "🇫🇷", url: "/fr/", gradient: ["#002395", "#ed2939"], bgImage: "https://flagcdn.com/w160/fr.png" },
         { type: "link", id: "lang-de", name: "Deutsch", icon: "🇩🇪", url: "/de/", gradient: ["#000000", "#ffce00"], bgImage: "https://flagcdn.com/w160/de.png" },

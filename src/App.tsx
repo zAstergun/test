@@ -7,11 +7,11 @@ import {
   isImageIcon,
   LANGUAGES,
   getHomeItems,
-  getUITranslations,
   type GridItem,
   type DetailableItem,
   type FolderItem,
   type Language,
+  type TranslationDict,
 } from "./data/aster";
 
 // ─── Helpers ─────────────────────────────────────────────────
@@ -242,6 +242,7 @@ function DetailPanel({
   onAnimationEnd,
   origin,
   isDark,
+  ui,
 }: {
   item: DetailableItem;
   onClose: () => void;
@@ -250,12 +251,13 @@ function DetailPanel({
   onAnimationEnd?: () => void;
   origin?: { x: string; y: string };
   isDark?: boolean;
+  ui: any;
 }) {
   const animClass = isClosing ? "animate-ipadAppClose" : "animate-ipadAppOpen";
   const panelBg = isDark ? 'bg-stone-900' : 'bg-aster-beige';
   const panelText = isDark ? 'text-stone-100' : 'text-aster-dark';
   const panelFaint = isDark ? 'text-stone-500' : 'text-aster-dark/40';
-  const ui = getUITranslations(item.lang as Language || 'br');
+  // ui is passed or can be accessed differently... wait, DetailPanel doesn't receive ui as prop currently!
 
   const containerClass = isDesktop
     ? `detail-panel-desktop absolute inset-0 z-20 flex flex-col ${panelBg} overflow-hidden ${animClass} transition-colors duration-500`
@@ -596,43 +598,79 @@ function FolderHeader({
 export default function App() {
   const [isBooting, setIsBooting] = useState(true);
   const [focusedIndex, setFocusedIndex] = useState(0);
-
-  // ─── Boot Experience ────────────────────────────────────────
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsBooting(false);
-    }, 1800);
-    return () => clearTimeout(timer);
-  }, []);
-  const [selectedDetail, setSelectedDetail] = useState<DetailableItem | null>(
-    null
-  );
+  const [selectedDetail, setSelectedDetail] = useState<DetailableItem | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [openFolder, setOpenFolder] = useState<FolderItem | null>(null);
   const [appOrigin, setAppOrigin] = useState({ x: "50%", y: "50%" });
   const [isDark, setIsDark] = useState(false);
-  const [language, setLanguage] = useState<Language>('br');
+  const [language, setLanguage] = useState<Language>('en');
+  const [translations, setTranslations] = useState<TranslationDict | null>(null);
+  
   const time = useClockTime();
   const isDesktop = useIsDesktop();
 
-  const HOME_ITEMS = useMemo(() => getHomeItems(language), [language]);
-  const ui = useMemo(() => getUITranslations(language), [language]);
-
   // ─── URL & Language Management ─────────────────────────────
   useEffect(() => {
-    const path = window.location.pathname;
-    const pathParts = path.split('/').filter(Boolean);
-    const langInPath = pathParts[0] as Language;
+    const initLanguage = async () => {
+      const path = window.location.pathname;
+      const pathParts = path.split('/').filter(Boolean);
+      let langInPath = pathParts[0] as string;
 
-    if (!langInPath || !LANGUAGES.includes(langInPath)) {
-      // Redirect to default language if not specified or invalid
-      const newPath = `/br${path}${window.location.search}`;
-      window.history.replaceState({}, "", newPath);
-      setLanguage('br');
-    } else {
-      setLanguage(langInPath);
-    }
+      if (langInPath === 'pt-br') langInPath = 'br';
+      else if (langInPath === 'pt-pt') langInPath = 'pt';
+
+      let targetLang: Language = 'en';
+
+      if (langInPath && LANGUAGES.includes(langInPath as Language)) {
+        targetLang = langInPath as Language;
+        localStorage.setItem('app-language', targetLang);
+      } else {
+        const savedLang = localStorage.getItem('app-language') as Language;
+        if (savedLang && LANGUAGES.includes(savedLang)) {
+          targetLang = savedLang;
+        } else {
+          const navLang = navigator.language.toLowerCase();
+          if (navLang === 'pt-br') targetLang = 'br';
+          else if (navLang === 'pt-pt' || navLang.startsWith('pt')) targetLang = 'pt';
+          else if (LANGUAGES.includes(navLang as Language)) targetLang = navLang as Language;
+        }
+      }
+
+      setLanguage(targetLang);
+      
+      const search = window.location.search;
+      window.history.replaceState({}, "", `/${targetLang}/${search}`);
+
+      try {
+        const module = await import(`./locales/${targetLang}.json`);
+        setTranslations(module.default || module);
+      } catch (err) {
+        console.error("Failed to load language file", err);
+      }
+    };
+
+    initLanguage();
   }, []);
+
+  // ─── Boot Experience ────────────────────────────────────────
+  useEffect(() => {
+    if (translations) {
+      const timer = setTimeout(() => {
+        setIsBooting(false);
+      }, 1800);
+      return () => clearTimeout(timer);
+    }
+  }, [translations]);
+
+  const HOME_ITEMS = useMemo(() => {
+    if (!translations) return [];
+    return getHomeItems(language, translations.items);
+  }, [language, translations]);
+
+  const ui = useMemo(() => {
+    if (!translations) return { booting: '[ ASTER_OS BOOT ]' } as any;
+    return translations.ui;
+  }, [translations]);
 
   // Update Title and HTML Lang
   useEffect(() => {
@@ -646,12 +684,13 @@ export default function App() {
   }, [selectedDetail, language]);
 
   // Update URL when language changes
-  const changeLanguage = useCallback((newLang: Language) => {
+  const changeLanguage = useCallback(async (newLang: Language) => {
     setLanguage(newLang);
+    localStorage.setItem('app-language', newLang);
+    
     const path = window.location.pathname;
     const pathParts = path.split('/').filter(Boolean);
     
-    // Replace the first part (language) or prepend if missing
     let newPath = '';
     if (pathParts.length > 0 && LANGUAGES.includes(pathParts[0] as Language)) {
       pathParts[0] = newLang;
@@ -661,6 +700,13 @@ export default function App() {
     }
     
     window.history.pushState({}, "", newPath + window.location.search);
+
+    try {
+      const module = await import(`./locales/${newLang}.json`);
+      setTranslations(module.default || module);
+    } catch (err) {
+      console.error("Failed to load language file", err);
+    }
   }, []);
 
   // ─── Theme helpers ────────────────────────────────────────
@@ -677,10 +723,7 @@ export default function App() {
       let parentFolder: FolderItem | null = null;
       let foundIndex = 0;
 
-      const pathParts = window.location.pathname.split('/').filter(Boolean);
-      const urlLang = pathParts[0] as Language;
-      const initialLang = (urlLang && LANGUAGES.includes(urlLang)) ? urlLang : language;
-      const items = getHomeItems(initialLang);
+      const items = HOME_ITEMS;
 
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
@@ -1014,6 +1057,7 @@ export default function App() {
           }
           origin={appOrigin}
           isDark={isDark}
+          ui={ui}
         />
       )}
     </>
@@ -1144,6 +1188,7 @@ export default function App() {
                     }
                     origin={appOrigin}
                     isDark={isDark}
+                    ui={ui}
                   />
                 )}
               </div>

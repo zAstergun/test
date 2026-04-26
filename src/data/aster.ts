@@ -476,6 +476,8 @@ export function getHomeItems(lang: Language): GridItem[] {
       links: [
         { title: "Download [PDF]", url: "/Currículo_Aster_Frontend.pdf", icon: "file-pdf" },
         { title: "Download [DOCX]", url: "/Currículo_Aster_Frontend.docx", icon: "file-word" },
+        { title: "Download [Markdown]", url: "/Currículo_Aster_Frontend.md", icon: "file-text" },
+        { title: "Download [JSON]", url: "/Currículo_Aster_Frontend.json", icon: "file-json" },
       ],
       tags: ["Frontend", "CV"],
       lang,

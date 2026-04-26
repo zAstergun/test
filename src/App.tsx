@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  HOME_ITEMS,
   GRID_COLS,
   isDetailable,
   isFolder,
   isLink,
   isImageIcon,
+  LANGUAGES,
+  getHomeItems,
+  getUITranslations,
   type GridItem,
   type DetailableItem,
   type FolderItem,
+  type Language,
 } from "./data/aster";
 
 // ─── Helpers ─────────────────────────────────────────────────
@@ -117,7 +120,7 @@ function GridIcon({
           img.src = item.previewMedia as string;
         }
       }}
-      className={`app-icon relative flex flex-col items-center gap-2 p-2 rounded-2xl transition-all duration-200 cursor-pointer ${
+      className={`app-icon relative flex flex-col items-center gap-2 p-2 rounded-2xl transition-all duration-200 cursor-pointer scroll-m-6 ${
         isFocused ? "focused" : ""
       }`}
       aria-label={
@@ -252,6 +255,7 @@ function DetailPanel({
   const panelBg = isDark ? 'bg-stone-900' : 'bg-aster-beige';
   const panelText = isDark ? 'text-stone-100' : 'text-aster-dark';
   const panelFaint = isDark ? 'text-stone-500' : 'text-aster-dark/40';
+  const ui = getUITranslations(item.lang as Language || 'br');
 
   const containerClass = isDesktop
     ? `detail-panel-desktop absolute inset-0 z-20 flex flex-col ${panelBg} overflow-hidden ${animClass} transition-colors duration-500`
@@ -269,7 +273,7 @@ function DetailPanel({
     >
       {/* Body — unified scroll area with title at top */}
       <div
-        className={`flex-1 overflow-y-auto ${isDesktop ? "ipad-content-reveal" : ""} ${
+        className={`flex-1 overflow-y-auto detail-scroll-area ${isDesktop ? "ipad-content-reveal" : ""} ${
           isDesktop ? "px-20 py-10" : "px-6 py-8"
         }`}
       >
@@ -279,7 +283,7 @@ function DetailPanel({
             type="button"
             onClick={onClose}
             className={`mb-6 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-500 cursor-pointer ${isDark ? 'bg-stone-600 text-stone-300 hover:bg-stone-600' : 'bg-aster-dark/10 text-aster-dark/60 hover:bg-aster-dark/20'}`}
-            aria-label="Voltar"
+            aria-label={ui.back}
           >
             ←
           </button>
@@ -370,7 +374,13 @@ function DetailPanel({
                         : "bg-aster-beige-dark/60 border-aster-dark/[0.08] hover:bg-aster-beige-dark"
                     }`}
                   >
-                    <span className="text-base">{getEmoji(link.icon)}</span>
+                    <span className="text-base">
+                      {isImageIcon(link.icon || "") ? (
+                        <img src={link.icon} alt={link.title} className="w-5 h-5 object-contain" />
+                      ) : (
+                        getEmoji(link.icon)
+                      )}
+                    </span>
                     <span
                       className={`text-sm font-medium group-hover:text-aster-accent transition-colors duration-500 ${
                         isDark ? "text-stone-300" : "text-aster-dark/80"
@@ -394,7 +404,7 @@ function DetailPanel({
 
         {/* Resumo Section */}
         <h3 className={`text-xs font-bold uppercase tracking-widest mb-3 transition-colors duration-500 ${panelFaint}`}>
-          Resumo
+          {ui.summary}
         </h3>
         <p
           className={`leading-relaxed transition-colors duration-500 ${isDark ? 'text-stone-300' : 'text-aster-dark/80'} ${
@@ -450,7 +460,7 @@ function DetailPanel({
             type="button"
             onClick={onClose}
             className={`home-btn relative z-10 w-14 h-14 rounded-full flex items-center justify-center cursor-pointer transition-all duration-500 ${isDark ? 'bg-stone-900/50 border border-stone-700 shadow-[inset_0_4px_8px_rgba(0,0,0,0.6)] hover:bg-stone-800' : 'bg-black/[0.02] border border-aster-dark/10 shadow-[inset_0_3px_6px_rgba(0,0,0,0.08)] hover:bg-black/[0.04]'}`}
-            aria-label="Botão Home — fechar app"
+            aria-label={ui.homeButton}
           >
           </button>
         </div>
@@ -474,14 +484,14 @@ function HomeButton({ onClick, isDark }: { onClick: () => void; isDark: boolean 
         type="button"
         onClick={onClick}
         className={`home-btn pointer-events-auto w-14 h-14 rounded-full flex items-center justify-center cursor-pointer transition-all duration-500 ${isDark ? 'bg-stone-900/80 border border-stone-700 shadow-[inset_0_4px_8px_rgba(0,0,0,0.6)] hover:bg-stone-800' : 'bg-aster-beige-dark/80 border border-aster-dark/10 shadow-[inset_0_3px_6px_rgba(0,0,0,0.08)] backdrop-blur-sm hover:bg-aster-beige-dark'}`}
-        aria-label="Botão Home — fechar app"
+        aria-label="Home"
       >
       </button>
     </div>
   );
 }
 
-function KeyHint({ isDesktop, isDark }: { isDesktop: boolean; isDark: boolean }) {
+function KeyHint({ isDesktop, isDark, ui }: { isDesktop: boolean; isDark: boolean; ui: any }) {
   if (!isDesktop) return null;
   return (
     <div className="flex items-center justify-center gap-3 py-2 animate-fade-in">
@@ -489,24 +499,26 @@ function KeyHint({ isDesktop, isDark }: { isDesktop: boolean; isDark: boolean })
         {["W", "A", "S", "D"].map((key) => (
           <kbd
             key={key}
-            className={`w-5 h-5 rounded text-[9px] font-mono font-bold flex items-center justify-center border transition-colors duration-500 ${isDark ? 'bg-stone-700 text-stone-400 border-stone-600' : 'bg-aster-dark/[0.08] text-aster-dark/40 border-aster-dark/10'}`}
+            className={`w-5 h-5 rounded text-[9px] font-mono font-bold flex items-center justify-center border transition-colors duration-500 ${isDark ? 'bg-stone-700 text-stone-400 border-stone-600' : 'bg-aster-beige-dark/20 text-aster-dark/40 border-aster-dark/10'}`}
           >
             {key}
           </kbd>
         ))}
       </div>
       <span className={`text-[9px] font-medium transition-colors duration-500 ${isDark ? 'text-stone-500' : 'text-aster-dark/30'}`}>
-        navegar
+        {ui.navigate}
       </span>
       <kbd className={`px-2 h-5 rounded text-[9px] font-mono font-bold flex items-center justify-center border transition-colors duration-500 ${isDark ? 'bg-stone-700 text-stone-400 border-stone-600' : 'bg-aster-dark/[0.08] text-aster-dark/40 border-aster-dark/10'}`}>
         Enter
       </kbd>
-      <span className={`text-[9px] font-medium transition-colors duration-500 ${isDark ? 'text-stone-500' : 'text-aster-dark/30'}`}>abrir</span>
+      <span className={`text-[9px] font-medium transition-colors duration-500 ${isDark ? 'text-stone-500' : 'text-aster-dark/30'}`}>
+        {ui.open}
+      </span>
     </div>
   );
 }
 
-function SplashScreen({ isBooting }: { isBooting: boolean }) {
+function SplashScreen({ isBooting, ui }: { isBooting: boolean; ui: any }) {
   return (
     <div
       className={`fixed inset-0 z-50 bg-aster-beige flex flex-col items-center justify-center transition-opacity duration-1000 ${
@@ -516,7 +528,7 @@ function SplashScreen({ isBooting }: { isBooting: boolean }) {
       <span className="text-5xl text-aster-dark select-none mb-6">✦</span>
       <div className="w-5 h-5 border-[3px] border-aster-dark/20 border-t-aster-dark rounded-full animate-spin" />
       <p className="text-[10px] font-mono tracking-[0.2em] text-aster-dark/40 uppercase mt-6 animate-pulse">
-        [ ASTER_OS BOOT ]
+        {ui.booting}
       </p>
     </div>
   );
@@ -526,18 +538,37 @@ function FolderHeader({
   folder,
   onBack,
   isDark,
+  ui,
 }: {
   folder: FolderItem;
   onBack: () => void;
   isDark: boolean;
+  ui: any;
 }) {
+  let singular = ui.project;
+  let plural = ui.projects;
+
+  if (folder.id === "blog") {
+    singular = ui.post;
+    plural = ui.posts;
+  } else if (folder.id === "idiomas") {
+    singular = ui.lang;
+    plural = ui.langs;
+  } else if (folder.id === "certificacoes") {
+    singular = ui.cert;
+    plural = ui.certs;
+  }
+
+  const count = folder.children.length;
+  const label = count === 1 ? singular : plural;
+
   return (
     <div className="flex items-center gap-2 px-5 pt-4 pb-2">
       <button
         type="button"
         onClick={onBack}
         className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors duration-500 cursor-pointer text-sm ${isDark ? 'bg-stone-700 text-stone-400 hover:bg-stone-600' : 'bg-aster-dark/[0.06] text-aster-dark/50 hover:bg-aster-dark/10'}`}
-        aria-label="Voltar para Home"
+        aria-label={ui.back}
       >
         ←
       </button>
@@ -554,8 +585,7 @@ function FolderHeader({
         {folder.name}
       </h2>
       <span className={`text-[10px] font-medium ml-auto transition-colors duration-500 ${isDark ? 'text-stone-500' : 'text-aster-dark/30'}`}>
-        {folder.children.length}{" "}
-        {folder.children.length === 1 ? "projeto" : "projetos"}
+        {count} {label}
       </span>
     </div>
   );
@@ -581,11 +611,59 @@ export default function App() {
   const [openFolder, setOpenFolder] = useState<FolderItem | null>(null);
   const [appOrigin, setAppOrigin] = useState({ x: "50%", y: "50%" });
   const [isDark, setIsDark] = useState(false);
+  const [language, setLanguage] = useState<Language>('br');
   const time = useClockTime();
   const isDesktop = useIsDesktop();
 
+  const HOME_ITEMS = useMemo(() => getHomeItems(language), [language]);
+  const ui = useMemo(() => getUITranslations(language), [language]);
+
+  // ─── URL & Language Management ─────────────────────────────
+  useEffect(() => {
+    const path = window.location.pathname;
+    const pathParts = path.split('/').filter(Boolean);
+    const langInPath = pathParts[0] as Language;
+
+    if (!langInPath || !LANGUAGES.includes(langInPath)) {
+      // Redirect to default language if not specified or invalid
+      const newPath = `/br${path}${window.location.search}`;
+      window.history.replaceState({}, "", newPath);
+      setLanguage('br');
+    } else {
+      setLanguage(langInPath);
+    }
+  }, []);
+
+  // Update Title and HTML Lang
+  useEffect(() => {
+    const baseTitle = "Aster Dev · Portfolio";
+    if (selectedDetail) {
+      document.title = `${baseTitle} | ${selectedDetail.name}`;
+    } else {
+      document.title = baseTitle;
+    }
+    document.documentElement.lang = language;
+  }, [selectedDetail, language]);
+
+  // Update URL when language changes
+  const changeLanguage = useCallback((newLang: Language) => {
+    setLanguage(newLang);
+    const path = window.location.pathname;
+    const pathParts = path.split('/').filter(Boolean);
+    
+    // Replace the first part (language) or prepend if missing
+    let newPath = '';
+    if (pathParts.length > 0 && LANGUAGES.includes(pathParts[0] as Language)) {
+      pathParts[0] = newLang;
+      newPath = '/' + pathParts.join('/') + '/';
+    } else {
+      newPath = `/${newLang}/`;
+    }
+    
+    window.history.pushState({}, "", newPath + window.location.search);
+  }, []);
+
   // ─── Theme helpers ────────────────────────────────────────
-  const bg = isDark ? 'bg-stone-900' : 'bg-aster-beige';
   const text = isDark ? 'text-stone-100' : 'text-aster-dark';
   const textFaint = isDark ? 'text-stone-500' : 'text-aster-dark/40';
 
@@ -599,8 +677,13 @@ export default function App() {
       let parentFolder: FolderItem | null = null;
       let foundIndex = 0;
 
-      for (let i = 0; i < HOME_ITEMS.length; i++) {
-        const item = HOME_ITEMS[i];
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      const urlLang = pathParts[0] as Language;
+      const initialLang = (urlLang && LANGUAGES.includes(urlLang)) ? urlLang : language;
+      const items = getHomeItems(initialLang);
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
         if (item.id === appId && isDetailable(item)) {
           foundItem = item;
           foundIndex = i;
@@ -628,13 +711,41 @@ export default function App() {
         setSelectedDetail(foundItem);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ─── Language Change Sync ─────────────────────────────────
+  useEffect(() => {
+    setOpenFolder((prev) => {
+      if (!prev) return null;
+      const newFolder = HOME_ITEMS.find((i) => i.id === prev.id);
+      return newFolder && isFolder(newFolder) ? newFolder : prev;
+    });
+
+    setSelectedDetail((prev) => {
+      if (!prev) return null;
+      let newDetail: DetailableItem | null = null;
+      for (const item of HOME_ITEMS) {
+        if (item.id === prev.id && isDetailable(item)) {
+          newDetail = item;
+          break;
+        }
+        if (isFolder(item)) {
+          const child = item.children.find((c) => c.id === prev.id);
+          if (child && isDetailable(child)) {
+            newDetail = child as DetailableItem;
+            break;
+          }
+        }
+      }
+      return newDetail || prev;
+    });
+  }, [HOME_ITEMS]);
 
   /** Items currently visible in the phone grid */
   const currentItems: GridItem[] = useMemo(
     () => (openFolder ? openFolder.children : HOME_ITEMS),
-    [openFolder]
+    [openFolder, HOME_ITEMS]
   );
 
   /** Clamped index — always safe for the current grid */
@@ -642,6 +753,14 @@ export default function App() {
     () => clampIndex(focusedIndex, currentItems.length),
     [focusedIndex, currentItems.length]
   );
+
+  // ─── Auto-scroll focused item ─────────────────────────────
+  useEffect(() => {
+    const focusedEl = document.querySelector('.app-icon.focused');
+    if (focusedEl) {
+      focusedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [safeFocusedIndex]);
 
   // ─── Actions ───────────────────────────────────────────────
 
@@ -651,9 +770,14 @@ export default function App() {
   }, []);
 
   const goBackFromFolder = useCallback(() => {
+    if (openFolder) {
+      const idx = HOME_ITEMS.findIndex((i) => i.id === openFolder.id);
+      setFocusedIndex(idx !== -1 ? idx : 0);
+    } else {
+      setFocusedIndex(0);
+    }
     setOpenFolder(null);
-    setFocusedIndex(0);
-  }, []);
+  }, [openFolder, HOME_ITEMS]);
 
   const closeDetail = useCallback(() => {
     setIsClosing(true);
@@ -672,12 +796,18 @@ export default function App() {
       }
 
       if (isLink(item)) {
+        if (item.id.startsWith('lang-')) {
+          const newLang = item.id.replace('lang-', '') as Language;
+          if (LANGUAGES.includes(newLang)) {
+            changeLanguage(newLang);
+            return;
+          }
+        }
         window.open(item.url, "_blank", "noopener,noreferrer");
         return;
       }
       if (isFolder(item)) {
         setOpenFolder(item);
-        setSelectedDetail(null);
         setFocusedIndex(0);
         return;
       }
@@ -705,7 +835,7 @@ export default function App() {
         });
       }
     },
-    []
+    [changeLanguage]
   );
 
   // ─── Keyboard Navigation ──────────────────────────────────
@@ -717,6 +847,16 @@ export default function App() {
         if (e.key === "Escape" || e.key === "Backspace") {
           e.preventDefault();
           closeDetail();
+          return;
+        }
+
+        if (["w", "W", "s", "S", "ArrowUp", "ArrowDown"].includes(e.key)) {
+          e.preventDefault();
+          const container = document.querySelector('.detail-scroll-area');
+          if (container) {
+            const amount = (e.key === "w" || e.key === "W" || e.key === "ArrowUp") ? -150 : 150;
+            container.scrollBy({ top: amount });
+          }
         }
         return;
       }
@@ -802,7 +942,7 @@ export default function App() {
 
       {/* Header / Folder header */}
       {openFolder ? (
-        <FolderHeader folder={openFolder} onBack={goBackFromFolder} isDark={isDark} />
+        <FolderHeader folder={openFolder} onBack={goBackFromFolder} isDark={isDark} ui={ui} />
       ) : (
         <div className="px-5 pt-4 pb-2">
           <div className="flex items-center gap-2 mb-1">
@@ -837,7 +977,7 @@ export default function App() {
       </div>
 
       {/* Key hints (desktop only) */}
-      <KeyHint isDesktop={isDesktop} isDark={isDark} />
+      <KeyHint isDesktop={isDesktop} isDark={isDark} ui={ui} />
 
       {/* Bottom bar (desktop only) */}
       {isDesktop && (
@@ -883,7 +1023,7 @@ export default function App() {
 
   return (
     <div className={`min-h-screen w-full relative overflow-hidden transition-colors duration-500 ${isDark ? 'bg-aster-dark' : 'bg-aster-beige'}`}>
-      <SplashScreen isBooting={isBooting} />
+      <SplashScreen isBooting={isBooting} ui={ui} />
 
       {/* Ambient glows (desktop only) */}
       {isDesktop && (
@@ -954,11 +1094,10 @@ export default function App() {
 
                   {/* Welcome copy */}
                   <h2 className={`text-2xl font-bold tracking-tight mb-2 transition-colors duration-500 ${isDark ? 'text-white/80' : 'text-aster-dark'}`}>
-                    Bem-vindo ao <span className="text-aster-accent">AsterDev</span>
+                    {ui.welcomeTitle} <span className="text-aster-accent">AsterDev</span>
                   </h2>
                   <p className={`text-sm font-medium max-w-sm text-center leading-relaxed mb-6 transition-colors duration-500 ${isDark ? 'text-white/30' : 'text-aster-dark/60'}`}>
-                    Explora o portfólio navegando pelos apps no telemóvel.
-                    Cada projeto abre aqui com todos os detalhes.
+                    {ui.welcomeSubtitle}
                   </p>
 
                   {/* Interaction hint */}
@@ -974,14 +1113,14 @@ export default function App() {
                       ))}
                     </div>
                     <span className={`text-xs font-medium transition-colors duration-500 ${isDark ? 'text-white/20' : 'text-aster-dark/40'}`}>
-                      navegar
+                      {ui.navigate}
                     </span>
                     <div className={`w-px h-4 transition-colors duration-500 ${isDark ? 'bg-white/10' : 'bg-aster-dark/10'}`} />
                     <kbd className={`px-3 h-6 rounded-md text-[10px] font-mono font-bold flex items-center justify-center border transition-colors duration-500 ${isDark ? 'bg-white/[0.06] text-white/30 border-white/[0.08]' : 'bg-aster-dark/[0.05] text-aster-dark/40 border-aster-dark/10'}`}>
                       Enter
                     </kbd>
                     <span className={`text-xs font-medium transition-colors duration-500 ${isDark ? 'text-white/20' : 'text-aster-dark/40'}`}>
-                      abrir
+                      {ui.open}
                     </span>
                   </div>
 
